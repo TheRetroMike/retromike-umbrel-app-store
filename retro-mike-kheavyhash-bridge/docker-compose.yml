@@ -35,4 +35,4 @@ services:
       - 16111:16111  # P2P
       - 17110:17110  # WRPC (Borsh)
       - 18110:18110  # WRPC (JSON)
-    entrypoint: "/app/entrypoint.sh kaspad --rpclisten=0.0.0.0:16110 --rpclisten-borsh=0.0.0.0:17110 --rpclisten-json=0.0.0.0:18110 --loglevel=info --yes --nologfile"
+    entrypoint: "/app/entrypoint.sh kaspad --rpclisten=0.0.0.0:16110 --rpclisten-borsh=0.0.0.0:17110 --rpclisten-json=0.0.0.0:18110 --loglevel=info --yes"
