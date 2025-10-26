@@ -7,23 +7,16 @@ category: Development
 version: "1.0.0"
 port: 4000
 description: >-
-  Add your app's description here.
+  Stratum bridge that can be used in conjunction with Kaspa and Kaspa fork nodes to solo mine
 
-
-  You can also add newlines!
-
-developer: Umbrel
-website: https://umbrel.com
-submitter: Umbrel
-submission: https://github.com/getumbrel/umbrel-hello-world-app
-repo: https://github.com/getumbrel/umbrel-hello-world-app
-support: https://github.com/getumbrel/umbrel-hello-world-app/issues
-gallery:
-  - https://i.imgur.com/yyVG0Jb.jpeg
-  - https://i.imgur.com/yyVG0Jb.jpeg
-  - https://i.imgur.com/yyVG0Jb.jpeg
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://github.com/TheRetroMike/kheavyhash-stratum-bridge
+repo: https://github.com/TheRetroMike/kheavyhash-stratum-bridge
+support: https://github.com/TheRetroMike/kheavyhash-stratum-bridge
 releaseNotes: >-
-  Add what's new in the latest version of your app here.
+  2025.10.26 - Initial Release
 dependencies: []
 path: ""
 defaultUsername: ""
