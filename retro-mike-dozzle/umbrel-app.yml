@@ -1,0 +1,41 @@
+manifestVersion: 1
+id: denny-dozzle
+name: Dozzle
+tagline: A realtime log viewer for Docker containers
+icon: https://i.imgur.com/YvL96Ej.png
+category: networking
+version: "8.12.8"
+port: 8558
+description: >-
+  Dozzle is a modern, lightweight, web-based application designed for real-time viewing of Docker container logs. It provides developers, DevOps engineers, and system administrators with a simple yet powerful interface to monitor logs from all running containers directly in their browser, without the need for log aggregation, external storage, or complex setup.
+
+
+  At its core, Dozzle is built to be fast and responsive. It connects directly to the Docker daemon by mounting the Docker socket, allowing it to stream logs in real time as they are generated. This makes it especially useful for debugging containers, identifying issues on the fly, and observing the behavior of applications without delay. Unlike other logging solutions that often require extensive infrastructure involving databases or log shippers, Dozzle remains minimalistic and efficient, focusing solely on providing instant access to container logs.
+
+
+  One of Dozzle’s key strengths is its user-friendly web interface. It supports advanced search and filtering capabilities, including fuzzy search and regular expressions, which help users quickly find relevant log entries even in large output streams. The interface is designed to be intuitive and clean, making it easy to navigate across containers, search logs, and follow log output in real time.
+
+
+  In addition to basic log viewing, Dozzle supports advanced features such as live resource usage monitoring, shell access into containers, and even multi-host support, enabling administrators to manage logs from distributed Docker environments within a single dashboard. It also offers compatibility with Docker Swarm and Kubernetes, broadening its usability in more complex container orchestration scenarios.
+
+
+  Security and scalability are also considered in Dozzle’s architecture. It includes options for setting up authentication, and a secure agent mode that allows remote hosts to send logs to a central Dozzle instance without exposing sensitive endpoints.
+
+
+  Dozzle is open source and released under the MIT license, actively maintained and developed by Amir Raminfar. It has gained popularity among the Docker community for its ease of use, clean design, and focus on doing one thing well—log viewing. By stripping away unnecessary complexity, Dozzle provides a seamless and efficient way to monitor container output in real time, making it an excellent tool for both development and production environments.
+developer: Amir Raminfar
+website: https://dozzle.dev/
+submitter: dennysubke
+submission: https://github.com/getumbrel/umbrel-apps/pull/
+repo: https://github.com/amir20/dozzle
+support: https://github.com/amir20/dozzle/issues
+gallery:
+  - https://i.imgur.com/9OHEmkj.png
+  - https://i.imgur.com/ZYygEts.png
+  - https://i.imgur.com/keht5E2.png
+releaseNotes: >-
+  Version 8.12.8 of Dozzle includes several improvements and bug fixes. It introduces the use of /tmp for better permission handling, visual tweaks for the light theme, a fixed link on container titles, and updates to dependencies and documentation.
+dependencies:
+path: ""
+defaultUsername: ""
+defaultPassword: ""
