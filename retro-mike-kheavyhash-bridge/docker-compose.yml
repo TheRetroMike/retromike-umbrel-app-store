@@ -12,8 +12,7 @@ services:
     image: theretromike/stratums:kHeavyHash
     user: "1000:1000"
     init: true
-    command:
-      - "--stratum :5001"
+    entrypoint: "/app --stratum :5001"
   web:
     image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1
     volumes:
