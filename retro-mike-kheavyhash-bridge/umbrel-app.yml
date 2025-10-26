@@ -1,7 +1,7 @@
 manifestVersion: 1
 id: retro-mike-kheavyhash-bridge
-name: Hello World
-tagline: Replace this tagline with your app's tagline
+name: kHeavyHash Stratum Bridge
+tagline: Stratum bridge that can be used in conjunction with Kaspa and Kaspa fork nodes to solo mine
 icon: https://svgur.com/i/mvA.svg
 category: Development
 version: "1.0.0"
