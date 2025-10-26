@@ -13,7 +13,6 @@ services:
     user: "1000:1000"
     init: true
     command:
-      - "--node 192.168.1.224:16110"
       - "--stratum :5001"
   web:
     image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1
