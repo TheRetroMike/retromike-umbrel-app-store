@@ -5,7 +5,7 @@ tagline: Stratum bridge that can be used in conjunction with Kaspa and Kaspa for
 icon: https://svgur.com/i/mvA.svg
 category: Development
 version: "1.0.0"
-port: 5555
+port: 5001
 description: >-
   Stratum bridge that can be used in conjunction with Kaspa and Kaspa fork nodes to solo mine
 
