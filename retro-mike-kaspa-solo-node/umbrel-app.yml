@@ -16,9 +16,8 @@ submission: https://github.com/TheRetroMike/kheavyhash-stratum-bridge
 repo: https://github.com/TheRetroMike/kheavyhash-stratum-bridge
 support: https://github.com/TheRetroMike/kheavyhash-stratum-bridge
 gallery:
-  - https://i.imgur.com/yyVG0Jb.jpeg
-  - https://i.imgur.com/yyVG0Jb.jpeg
-  - https://i.imgur.com/yyVG0Jb.jpeg
+  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode1.png
+  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode2.png
 releaseNotes: >-
   2025.10.26 - Initial Release
 dependencies: []
