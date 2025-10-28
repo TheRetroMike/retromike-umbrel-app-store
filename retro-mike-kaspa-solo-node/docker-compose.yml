@@ -5,7 +5,7 @@ services:
   app_proxy:
     environment:
       # The format here is: <app-id>_<docker-service-name>_1
-      APP_HOST: retro-mike-kheavyhash-bridge_web_1
+      APP_HOST: retro-mike-kaspa-solo-node_web_1
       APP_PORT: 8080
     
   server:
