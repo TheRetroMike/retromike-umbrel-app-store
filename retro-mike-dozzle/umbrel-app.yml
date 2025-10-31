@@ -3,7 +3,7 @@ id: retro-mike-dozzle
 name: Dozzle
 tagline: A realtime log viewer for Docker containers
 icon: https://i.imgur.com/YvL96Ej.png
-category: networking
+category: Utilities
 version: "8.12.8"
 port: 8558
 description: >-
