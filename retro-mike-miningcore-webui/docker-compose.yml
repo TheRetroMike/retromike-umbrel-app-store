@@ -15,6 +15,6 @@ services:
       - 5002:8080
     restart: on-failure
     environment:
-      - POOL_NAME="Self-Hosted Mining Pool"
+      - POOL_NAME=Self-Hosted Mining Pool
       - STRATUM_HOST="192.168.1.100"
       - API_BASE_URL="http://192.168.1.100:4000/api"
