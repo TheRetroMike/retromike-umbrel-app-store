@@ -6,7 +6,7 @@ services:
     environment:
       # The format here is: <app-id>_<docker-service-name>_1
       APP_HOST: retro-mike-miningcore-webui_web_1
-      APP_PORT: 5002
+      APP_PORT: 8080
   web:
     image: theretromike/miningcorewebui
     ports:
