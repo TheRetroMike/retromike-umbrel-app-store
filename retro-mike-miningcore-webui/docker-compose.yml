@@ -12,7 +12,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
-      - 5002:8080
+      - "5002:8080/tcp"
     restart: on-failure
     environment:
       - POOL_NAME="Self-Hosted Mining Pool"
