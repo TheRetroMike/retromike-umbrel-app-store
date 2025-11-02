@@ -1,0 +1,26 @@
+manifestVersion: 1
+id: retro-mike-miningcore-webui
+name: MiningCore Web UI
+tagline: Web UI for the MiningCore Mining Pool App
+#icon: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Kaspa-logo.svg/250px-Kaspa-logo.svg.png
+category: WIP - DO NOT USE
+version: "1.0.0"
+port: 5002
+description: >-
+  Web UI for the MiningCore Mining Pool App. For a full functioning app, you will also need to install the MiningCore App.
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://hub.docker.com/r/theretromike/miningcorewebui
+repo: https://hub.docker.com/r/theretromike/miningcorewebui
+support: https://hub.docker.com/r/theretromike/miningcorewebui
+#gallery:
+#  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode1.png?raw=true
+#  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode2.png?raw=true
+releaseNotes: >-
+  2025.11.02 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
