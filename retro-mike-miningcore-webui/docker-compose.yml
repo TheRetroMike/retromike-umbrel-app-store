@@ -9,8 +9,6 @@ services:
       APP_PORT: 5002
   web:
     image: theretromike/miningcorewebui
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - 5002:8080
     restart: on-failure
