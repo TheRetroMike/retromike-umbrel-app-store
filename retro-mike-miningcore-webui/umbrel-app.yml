@@ -15,7 +15,7 @@ submitter: Retro Mike
 submission: https://hub.docker.com/r/theretromike/miningcorewebui
 repo: https://hub.docker.com/r/theretromike/miningcorewebui
 support: https://hub.docker.com/r/theretromike/miningcorewebui
-#gallery:
+gallery:
 #  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode1.png?raw=true
 #  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode2.png?raw=true
 releaseNotes: >-
