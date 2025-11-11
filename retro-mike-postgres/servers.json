@@ -1,6 +1,6 @@
 {
   "Servers": {
-    "1": {
+    "Umbrel": {
       "Name": "Local Postgres",
       "Group": "Servers",
       "Host": "db",
