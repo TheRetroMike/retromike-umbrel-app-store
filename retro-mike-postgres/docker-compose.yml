@@ -18,7 +18,7 @@ services:
     environment:
       POSTGRES_DB: umbrel
       POSTGRES_USER: umbrel
-      POSTGRES_PASSWORD: change_me
+      POSTGRES_PASSWORD: P@ssw0rd
       TZ: America/Chicago
     volumes:
       - ${APP_DATA_DIR}/pgadmin:/var/lib/pgadmin
@@ -53,7 +53,7 @@ services:
     environment:
       # explicit creds (don’t rely on Umbrel vars here)
       PGADMIN_DEFAULT_EMAIL: admin@umbrel.local
-      PGADMIN_DEFAULT_PASSWORD: change_me
+      PGADMIN_DEFAULT_PASSWORD: P@ssw0rd
       PGADMIN_LISTEN_PORT: "80"
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
 
