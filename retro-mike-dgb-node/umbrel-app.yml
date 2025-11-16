@@ -1,0 +1,25 @@
+manifestVersion: 1
+id: retro-mike-dgb-node
+name: Digibyte (DGB) Node
+tagline: Digibyte Node. This is a general node app for Digibyte and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Digibyte network.
+icon: https://github.com/DigiByte-Core/digibyte-logos/blob/master/Logos%20Bitmap/transparent%20bg/ClearBg%20DigiByte.png?raw=true
+category: SOLO Crypto Mining
+version: "1.0.0"
+port: 5006
+description: >-
+  Digibyte Node. This is a general node app for Digibyte and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Digibyte network.
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://github.com/TheRetroMike/digibyte
+repo: https://github.com/TheRetroMike/digibyte
+support: https://github.com/TheRetroMike/digibyte
+gallery:
+  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-dgb-node/coming-soon.jpg?raw=true
+releaseNotes: >-
+  2025.11.16 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
