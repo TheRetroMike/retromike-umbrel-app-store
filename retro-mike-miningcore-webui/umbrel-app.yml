@@ -4,7 +4,7 @@ name: MiningCore Web UI
 tagline: Web UI for the MiningCore Mining Pool App
 #icon: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Kaspa-logo.svg/250px-Kaspa-logo.svg.png
 category: WIP - DO NOT USE
-version: "1.0.3"
+version: "1.0.4"
 port: 8559
 description: >-
   Web UI for the MiningCore Mining Pool App. For a full functioning app, you will also need to install the MiningCore App.
