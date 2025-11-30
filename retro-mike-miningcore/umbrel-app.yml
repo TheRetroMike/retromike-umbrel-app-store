@@ -1,0 +1,26 @@
+manifestVersion: 1
+id: retro-mike-miningcore
+name: MiningCore
+tagline: MiningCore Mining Pool App
+#icon: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Kaspa-logo.svg/250px-Kaspa-logo.svg.png
+category: WIP - DO NOT USE
+version: "1.0.0"
+port: 8560
+description: >-
+  MiningCore Mining Pool App. For a full functioning app, you will also need to install one or more nodes and configure the Pool Config JSON file manually by SSHing into your Umbrel server.
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://hub.docker.com/r/theretromike/miningcore
+repo: https://hub.docker.com/r/theretromike/miningcore
+support: https://hub.docker.com/r/theretromike/miningcore
+gallery:
+#  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode1.png?raw=true
+#  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode2.png?raw=true
+releaseNotes: >-
+  2025.11.30 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
