@@ -4,7 +4,6 @@ services:
 
   app_proxy:
     environment:
-      # The format here is: <app-id>_<docker-service-name>_1
       APP_HOST: retro-mike-miningcore-webui_web_1
       APP_PORT: 8080
   web:
@@ -15,4 +14,4 @@ services:
     environment:
       - POOL_NAME=Self-Hosted Mining Pool
       - STRATUM_HOST="192.168.1.100"
-      - API_BASE_URL="http://127.0.0.1:4000/api"
+      - API_BASE_URL="http://192.168.1.33:4000/api"
