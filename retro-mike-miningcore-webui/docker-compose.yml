@@ -13,5 +13,5 @@ services:
     restart: on-failure
     environment:
       - POOL_NAME=Self-Hosted Mining Pool
-      - STRATUM_HOST="192.168.1.100"
-      - API_BASE_URL="http://192.168.1.33:4000/api"
+      - STRATUM_HOST=192.168.1.100
+      - API_BASE_URL=http://192.168.1.33:4000/api
