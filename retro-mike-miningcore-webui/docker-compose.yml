@@ -13,5 +13,5 @@ services:
     restart: on-failure
     environment:
       - POOL_NAME=Self-Hosted Mining Pool
-      - STRATUM_HOST=$HOSTNAME
-      - API_BASE_URL=http://umbrel:4000/api
+      - STRATUM_HOST=umbrel.local
+      - API_BASE_URL=http://umbrel.local:4000/api
