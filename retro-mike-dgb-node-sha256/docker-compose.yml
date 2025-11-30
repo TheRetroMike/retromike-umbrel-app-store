@@ -4,8 +4,7 @@ services:
 
   app_proxy:
     environment:
-      # The format here is: <app-id>_<docker-service-name>_1
-      APP_HOST: retro-mike-dgb-node_web_1
+      APP_HOST: retro-mike-dgb-node-sha256_web_1
       APP_PORT: 8080
   web:
     image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1
@@ -23,3 +22,4 @@ services:
     ports:
       - 4001:4001    # RPC
       - 12024:12024  # P2P
+    entrypoint: "/app/digibyted -printtoconsole -server -algo=sha256d -prune=550 -wallet=default -zmqpubhashblock=tcp://127.0.0.1:7001 -rpcport=9001 -rpcauth=pooluser:bc1f961ad347f79ab97fa7e3ac35f02a$eb31de681359ba83be70e2cc178bf7de7b3b7affb29df2fb41907436d8ef734e"
