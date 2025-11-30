@@ -22,4 +22,4 @@ services:
     ports:
       - 4001:4001    # RPC
       - 12024:12024  # P2P
-    entrypoint: "/app/digibyted -printtoconsole -server -algo=sha256d -prune=550 -wallet=default -zmqpubhashblock=tcp://127.0.0.1:7001 -rpcport=9001 -rpcauth=pooluser:bc1f961ad347f79ab97fa7e3ac35f02a$eb31de681359ba83be70e2cc178bf7de7b3b7affb29df2fb41907436d8ef734e"
+    entrypoint: "digibyted -printtoconsole -server -algo=sha256d -prune=550 -wallet=default -zmqpubhashblock=tcp://127.0.0.1:7001 -rpcport=9001 -rpcauth=pooluser:bc1f961ad347f79ab97fa7e3ac35f02a$eb31de681359ba83be70e2cc178bf7de7b3b7affb29df2fb41907436d8ef734e"
