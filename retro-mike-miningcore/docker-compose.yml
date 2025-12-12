@@ -14,7 +14,7 @@ services:
       - /home/umbrel/.miningcore/coins.json:/app/coins.json
       - /home/umbrel/.miningcore/config.json:/app/config.json
     ports:
-      - 6001:6001
+      - 6001-6025:6001-6025
       - 4000:4000
   web:
     image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1

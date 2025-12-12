@@ -19,6 +19,7 @@ gallery:
 #  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode1.png?raw=true
 #  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode2.png?raw=true
 releaseNotes: >-
+  2025.12.12 - Increased default stratum port to be 25 to allow for multiple coins
   2025.11.30 - Initial Release
 dependencies: []
 path: ""
