@@ -14,7 +14,7 @@ services:
     depends_on:
       - node
   node:
-    image: theretromike/nodes:doge
+    image: theretromike/nodes:dogecoin
     restart: on-failure
     stop_grace_period: 1m
     volumes:
