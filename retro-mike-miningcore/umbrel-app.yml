@@ -4,7 +4,7 @@ name: MiningCore
 tagline: MiningCore Mining Pool App
 #icon: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Kaspa-logo.svg/250px-Kaspa-logo.svg.png
 category: WIP - DO NOT USE
-version: "1.0.0"
+version: "1.1.0"
 port: 8560
 description: >-
   MiningCore Mining Pool App. For a full functioning app, you will also need to install one or more nodes and configure the Pool Config JSON file manually by SSHing into your Umbrel server.
