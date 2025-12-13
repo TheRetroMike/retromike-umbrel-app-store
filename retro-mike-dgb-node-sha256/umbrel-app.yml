@@ -6,7 +6,7 @@ icon: https://github.com/DigiByte-Core/digibyte-logos/blob/master/Logos%20Bitmap
 category: SOLO Crypto Mining
 version: "1.0.1"
 port: 5006
-description: >-
+description: |
   Digibyte Node. This is a general node app for Digibyte that runs against the SHA256 algo and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Digibyte network.
 
   If you find this app useful, please consider donating

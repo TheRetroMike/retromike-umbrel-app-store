@@ -6,7 +6,7 @@ icon: https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
 category: SOLO Crypto Mining
 version: "1.1.1"
 port: 8560
-description: }
+description: |
   MiningCore Mining Pool App. For a full functioning app, you will also need to install one or more nodes and configure the Pool Config JSON file manually by SSHing into your Umbrel server.
 
   If you find this app useful, please consider donating
