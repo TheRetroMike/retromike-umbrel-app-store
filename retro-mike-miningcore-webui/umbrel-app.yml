@@ -3,12 +3,17 @@ id: retro-mike-miningcore-webui
 name: MiningCore Web UI
 tagline: Web UI for the MiningCore Mining Pool App
 icon: https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
-category: WIP - DO NOT USE
+category: SOLO Crypto Mining
 version: "1.1.0"
 port: 8559
 description: >-
   Web UI for the MiningCore Mining Pool App. For a full functioning app, you will also need to install the MiningCore App.
-
+  If you find this app useful, please consider donating
+  BTC - 31q6x9Vp9J2BJ8rTnW4F8aP744CEAScFN5
+  LTC - MAhooUHqeTdhJoMEjbgTwFSqhZmbzyko83
+  DOGE - DSQLL3m5B1BwZa7jaNnoYaXHVeT9cAHUvd
+  BCH - bitcoincash:qzczcn98zusq77fk6jq744xu0u8jlrd6su930qk7x7
+  DGB - DGjhBN3ckfAjijfcptH66TNCTHpzBdxtMc
 developer: Retro Mike
 website: http://retromiketech.com
 submitter: Retro Mike
@@ -16,8 +21,7 @@ submission: https://hub.docker.com/r/theretromike/miningcorewebui
 repo: https://hub.docker.com/r/theretromike/miningcorewebui
 support: https://hub.docker.com/r/theretromike/miningcorewebui
 gallery:
-#  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode1.png?raw=true
-#  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-kaspa-solo-node/KaspaNode2.png?raw=true
+  - https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
 releaseNotes: >-
   2025.11.02 - Initial Release
 dependencies: []
