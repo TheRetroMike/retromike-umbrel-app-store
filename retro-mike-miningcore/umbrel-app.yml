@@ -3,11 +3,19 @@ id: retro-mike-miningcore
 name: MiningCore
 tagline: MiningCore Mining Pool App
 icon: https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
-category: WIP - DO NOT USE
+category: SOLO Crypto Mining
 version: "1.1.1"
 port: 8560
-description: >-
+description: }
   MiningCore Mining Pool App. For a full functioning app, you will also need to install one or more nodes and configure the Pool Config JSON file manually by SSHing into your Umbrel server.
+
+  If you find this app useful, please consider donating
+
+  BTC - 31q6x9Vp9J2BJ8rTnW4F8aP744CEAScFN5
+  LTC - MAhooUHqeTdhJoMEjbgTwFSqhZmbzyko83
+  DOGE - DSQLL3m5B1BwZa7jaNnoYaXHVeT9cAHUvd
+  BCH - bitcoincash:qzczcn98zusq77fk6jq744xu0u8jlrd6su930qk7x7
+  DGB - DGjhBN3ckfAjijfcptH66TNCTHpzBdxtMc
 
 developer: Retro Mike
 website: http://retromiketech.com

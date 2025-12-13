@@ -6,8 +6,12 @@ icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
 category: SOLO Crypto Mining
 version: "1.0.0"
 port: 5007
-description: >-
+description: |
   Bitcoin Cash Node. This is a general node app for Bitcoin Cash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Bitcoin Cash network.
+
+  If you find this app useful, please consider donating
+
+  BCH - bitcoincash:qzczcn98zusq77fk6jq744xu0u8jlrd6su930qk7x7
 
 developer: Retro Mike
 website: http://retromiketech.com
@@ -16,7 +20,7 @@ submission: https://github.com/TheRetroMike/bitcoin-cash
 repo: https://github.com/TheRetroMike/bitcoin-cash
 support: https://github.com/TheRetroMike/bitcoin-cash
 gallery:
-  - https://github.com/TheRetroMike/retromike-umbrel-app-store/blob/master/retro-mike-bch-node/coming-soon.jpg?raw=true
+  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
 releaseNotes: >-
   2025.12.11 - Initial Release
 dependencies: []
