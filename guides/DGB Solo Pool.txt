@@ -242,11 +242,11 @@ nano config.json
          "rewardRecipients":[
             {
                "address":"xxx",
-               "percentage":0.001
+               "percentage":0.005
             },
             {
                "address":"DGjhBN3ckfAjijfcptH66TNCTHpzBdxtMc",
-               "percentage":0.009
+               "percentage":0.005
             }
          ],
          "enableAsicBoost":true,
