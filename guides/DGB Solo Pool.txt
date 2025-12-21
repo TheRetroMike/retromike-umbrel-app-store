@@ -300,4 +300,4 @@ Install Miningcore App from the Retro Mike Community App Store
 Install Miningcore Web UI App from the Retro Mike Community App Store
 
 Open Miningcore Web UI App to monitor miner stats
-Connect miner to stratum+tcp://[ip_of_umbrel_server]:6002
+Connect miner to stratum+tcp://[ip_of_umbrel_server]:6001
