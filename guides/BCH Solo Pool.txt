@@ -1,6 +1,6 @@
 Add Retro Mike Community App Store to Umbrel: https://github.com/TheRetroMike/retromike-umbrel-app-store
 Install Postgres App from the Retro Mike Community App Store
-Install DGB Node App from the Retro Mike Community App Store
+Install BCH Node App from the Retro Mike Community App Store
 
 Open Postgres App and Login
 Username: admin@umbrel.local
@@ -156,9 +156,8 @@ SSH into Umbrel Server
 Username: umbrel
 Password: [password you set up in umbrel web ui]
 
-Get node pool address by running these commands. Copy the address and then replace xxx in the bch pool config file you will generate in a few steps with the address:
-sudo docker exec retro-mike-dgb-node-sha256_digibyted_1 digibyte-cli -rpcport=9001 -rpcuser=pooluser -rpcpassword=poolpassword createwallet default
-sudo docker exec retro-mike-dgb-node-sha256_digibyted_1 digibyte-cli -rpcport=9001 -rpcuser=pooluser -rpcpassword=poolpassword getnewaddress "" "legacy"
+Get node pool address by running this command. Copy the address and then replace xxx in the bch pool config file you will generate in a few steps with the address:
+sudo docker exec retro-mike-bch-node_node_1 bitcoin-cli -rpcport=9002 -rpcuser=pooluser -rpcpassword=poolpassword getnewaddress
 
 mkdir .miningcore
 cd .miningcore
@@ -166,131 +165,131 @@ wget https://raw.githubusercontent.com/xiaolin1579/miningcore/refs/heads/dev/src
 nano config.json
 
 -------------------
+Sample BCH Config:
 {
-   "logging":{
-      "level":"info",
-      "enableConsoleLog":true,
-      "enableConsoleColors":true,
-      "logFile":"",
-      "apiLogFile":"",
-      "logBaseDirectory":"",
-      "perPoolLogFile":true
-   },
-   "banning":{
-      "manager":"Integrated",
-      "banOnJunkReceive":true,
-      "banOnInvalidShares":false
-   },
-   "notifications":{
-      "enabled":false,
-      "email":{
-         "host":"smtp.example.com",
-         "port":587,
-         "user":"user",
-         "password":"password",
-         "fromAddress":"info@yourpool.org",
-         "fromName":"support"
-      },
-      "admin":{
-         "enabled":false,
-         "emailAddress":"user@example.com",
-         "notifyBlockFound":true
-      }
-   },
-   "persistence":{
-      "postgres":{
-         "host":"retro-mike-postgres_db_1",
-         "port":5432,
-         "user":"miningcore",
-         "password":"miningcore",
-         "database":"miningcore"
-      }
-   },
-   "paymentProcessing":{
-      "enabled":true,
-      "interval":600,
-      "shareRecoveryFile":"recovered-shares.txt",
-      "coinbaseString":"Mined by Umbrel RMT Node"
-   },
-   "api":{
-      "enabled":true,
-      "listenAddress":"*",
-      "port":4000,
-      "metricsIpWhitelist":[
-         
+  "logging": {
+    "level": "info",
+    "enableConsoleLog": true,
+    "enableConsoleColors": true,
+    "logFile": "",
+    "apiLogFile": "",
+    "logBaseDirectory": "",
+    "perPoolLogFile": true
+  },
+  "banning": {
+    "manager": "Integrated",
+    "banOnJunkReceive": true,
+    "banOnInvalidShares": false
+  },
+  "notifications": {
+    "enabled": false,
+    "email": {
+      "host": "smtp.example.com",
+      "port": 587,
+      "user": "user",
+      "password": "password",
+      "fromAddress": "info@yourpool.org",
+      "fromName": "support"
+    },
+    "admin": {
+      "enabled": false,
+      "emailAddress": "user@example.com",
+      "notifyBlockFound": true
+    }
+  },
+  "persistence": {
+    "postgres": {
+      "host": "retro-mike-postgres_db_1",
+      "port": 5432,
+      "user": "miningcore",
+      "password": "miningcore",
+      "database": "miningcore"
+    }
+  },
+  "paymentProcessing": {
+    "enabled": true,
+    "interval": 600,
+    "shareRecoveryFile": "recovered-shares.txt",
+    "coinbaseString": "Mined with RMT Node on Umbrel"
+  },
+  "api": {
+    "enabled": true,
+    "listenAddress": "*",
+    "port": 4000,
+    "metricsIpWhitelist": [],
+    "rateLimiting": {
+      "disabled": true,
+      "rules": [
+        {
+          "Endpoint": "*",
+          "Period": "1s",
+          "Limit": 5
+        }
       ],
-      "rateLimiting":{
-         "disabled":true,
-         "rules":[
-            {
-               "Endpoint":"*",
-               "Period":"1s",
-               "Limit":5
-            }
-         ],
-         "ipWhitelist":[
-            ""
-         ]
+      "ipWhitelist": [
+        ""
+      ]
+    }
+  },
+  "pools": [
+ {
+  "id": "bch",
+  "enabled": true,
+  "coin": "bitcoin-cash",
+  "address": "xxx",
+  "addressType": "bcash",
+  "rewardRecipients": [
+    {
+      "address": "xxx",
+      "percentage": 0.05
+    },
+    {
+      "address": "qz97m5eaxdhrkud050nxd923jxt9llgkyggyw6v0sx",
+      "percentage": 0.05
+    },
+  ],
+  "enableAsicBoost": true,
+  "blockRefreshInterval": 0,
+  "jobRebroadcastTimeout": 10,
+  "clientConnectionTimeout": 600,
+  "banning": {
+    "enabled": true,
+    "time": 600,
+    "invalidPercent": 50,
+    "checkThreshold": 50
+  },
+  "ports": {
+    "6002": {
+      "name": "General ASIC",
+      "listenAddress": "0.0.0.0",
+      "difficulty": 1024,
+      "varDiff": {
+        "minDiff": 1,
+        "targetTime": 15,
+        "retargetTime": 90,
+        "variancePercent": 30
       }
-   },
-   "pools":[
-      {
-         "id":"dgb",
-         "enabled":true,
-         "coin":"digibyte-sha256",
-         "address":"xxx",
-         "rewardRecipients":[
-            {
-               "address":"xxx",
-               "percentage":0.05
-            },
-            {
-               "address":"DGjhBN3ckfAjijfcptH66TNCTHpzBdxtMc",
-               "percentage":0.05
-            }
-         ],
-         "enableAsicBoost":true,
-         "blockRefreshInterval":0,
-         "jobRebroadcastTimeout":10,
-         "clientConnectionTimeout":600,
-         "banning":{
-            "enabled":true,
-            "time":600,
-            "invalidPercent":50,
-            "checkThreshold":50
-         },
-         "ports":{
-            "6001":{
-               "name":"General ASIC",
-               "listenAddress":"0.0.0.0",
-               "difficulty":1024,
-               "varDiff":{
-                  "minDiff":1,
-                  "targetTime":15,
-                  "retargetTime":90,
-                  "variancePercent":30
-               }
-            }
-         },
-         "daemons":[
-            {
-               "host":"retro-mike-dgb-node-sha256_digibyted_1",
-               "port":9001,
-               "user":"pooluser",
-               "password":"poolpassword",
-               "zmqBlockNotifySocket":"tcp://retro-mike-dgb-node-sha256_digibyted_1:7001"
-            }
-         ],
-         "paymentProcessing":{
-            "enabled":true,
-            "minimumPayment":0.001,
-            "payoutScheme":"SOLO",
-            "payoutSchemeConfig":{
-               "factor":2
-            }
-         }
-      },
-   ]
+    },
+  },
+  "daemons": [
+    {
+      "host": "retro-mike-bch-node_node_1",
+      "port": 9002,
+      "user": "pooluser",
+      "password": "poolpassword",
+      "zmqBlockNotifySocket": "tcp://retro-mike-bch-node_node_1:7002"
+    }
+  ],
+  "paymentProcessing": {
+    "enabled": true,
+    "minimumPayment": 0.001,
+    "payoutScheme": "SOLO",
+    "payoutSchemeConfig": {
+      "factor": 2
+    }
+  }
+ }
+]
 }
 ------------------
 ctrl+x then y then enter to save and exit
@@ -300,4 +299,4 @@ Install Miningcore App from the Retro Mike Community App Store
 Install Miningcore Web UI App from the Retro Mike Community App Store
 
 Open Miningcore Web UI App to monitor miner stats
-Connect miner to stratum+tcp://[ip_of_umbrel_server]:6001
+Connect miner to stratum+tcp://[ip_of_umbrel_server]:6002
