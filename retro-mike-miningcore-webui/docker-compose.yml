@@ -13,6 +13,7 @@ services:
     restart: on-failure
     volumes:
       - /home/umbrel/.miningcore:/app/miningcore
+    user: "1000:1000"
     environment:
       - POOL_NAME=Self-Hosted Mining Pool
       - STRATUM_HOST=umbrel.local
