@@ -11,6 +11,8 @@ services:
 #    ports:
 #      - 5002:8080
     restart: on-failure
+    volumes:
+      - /home/umbrel/.miningcore:/app/.miningcore
     environment:
       - POOL_NAME=Self-Hosted Mining Pool
       - STRATUM_HOST=umbrel.local
