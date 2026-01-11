@@ -1,4 +1,4 @@
-+manifestVersion: 1
+manifestVersion: 1
 id: retro-mike-bc2-node
 name: BitcoinII (BC2) Node
 tagline: BitcoinII Node. This is a general node app for BitcoinII and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Bitcoin II network.
