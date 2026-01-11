@@ -351,7 +351,7 @@
     },
     "bitcoinII": {
         "name": "BitcoinII",
-        "canonicalName": "Bitcoin",
+        "canonicalName": "BitcoinII",
         "symbol": "BC2",
         "family": "bitcoin",
         "website": "https://bitcoin-ii.org/",
