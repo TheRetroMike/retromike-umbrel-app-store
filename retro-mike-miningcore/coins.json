@@ -349,9 +349,9 @@
         "explorerTxLink": "https://www.blockchain.com/btc/tx/{0}",
         "explorerAccountLink": "https://www.blockchain.com/btc/address/{0}"
     },
-    "bitcoinII": {
+    "bitcoin-ii": {
         "name": "BitcoinII",
-        "canonicalName": "BitcoinII",
+        "canonicalName": "Bitcoin-II",
         "symbol": "BC2",
         "family": "bitcoin",
         "website": "https://bitcoin-ii.org/",
