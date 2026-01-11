@@ -4,7 +4,7 @@ name: MiningCore Web UI
 tagline: Web UI for the MiningCore Mining Pool App
 icon: https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
 category: SOLO Crypto Mining
-version: "2.0.0"
+version: "2.1.0"
 port: 8559
 description: |
   Web UI for the MiningCore Mining Pool App. For a full functioning app, you will also need to install the MiningCore App.
@@ -16,6 +16,9 @@ description: |
   DOGE - DSQLL3m5B1BwZa7jaNnoYaXHVeT9cAHUvd
   BCH - bitcoincash:qzczcn98zusq77fk6jq744xu0u8jlrd6su930qk7x7
   DGB - DGjhBN3ckfAjijfcptH66TNCTHpzBdxtMc
+  BSV - 1EFKjK1wYKGcc7c3Hs87jcsR1rkRx2KVPZ
+  BC2 - bc1qwgeeflavv596u0s7np3yll5acllvwq5wx2ealf
+
 developer: Retro Mike
 website: http://retromiketech.com
 submitter: Retro Mike
@@ -25,6 +28,7 @@ support: https://hub.docker.com/r/theretromike/miningcorewebui
 gallery:
   - https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
 releaseNotes: |
+  2026.01.11 - Added BitcoinII
   2026.01.10 - Added Pool Configuration Screen allowing for no-code configuration    
   2025.11.02 - Initial Release
 dependencies: []
