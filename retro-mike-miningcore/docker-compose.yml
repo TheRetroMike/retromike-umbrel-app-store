@@ -11,7 +11,7 @@ services:
     user: "1000:1000"
     init: true
     volumes:
-      - /home/umbrel/.miningcore/coins.json:/app/coins.json
+      - /home/umbrel/.miningcore/coins.json:/app/build/coins.json
       - /home/umbrel/.miningcore/config.json:/app/config.json
     ports:
       - 6001-6025:6001-6025
