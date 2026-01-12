@@ -33,12 +33,12 @@ releaseNotes: |
   2025.11.02 - Initial Release
 widgets:
   - id: "status"
-    type: "four-stats"
+    type: "list"
     refresh: "5s"
     endpoint: "web:8080/api/PoolStatsWidget"
     link: ""
     example:
-      type: "four-stats"
+      type: "list"
       link: ""
       items:
         - title: "Bitcoin"
