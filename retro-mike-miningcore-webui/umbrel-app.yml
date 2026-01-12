@@ -31,6 +31,28 @@ releaseNotes: |
   2026.01.11 - Added BitcoinII
   2026.01.10 - Added Pool Configuration Screen allowing for no-code configuration    
   2025.11.02 - Initial Release
+widgets:
+  - id: "status"
+    type: "four-stats"
+    refresh: "5s"
+    endpoint: "web:8080/api/PoolStatsWidget"
+    link: ""
+    example:
+      type: "four-stats"
+      link: ""
+      items:
+        - title: "Bitcoin"
+          text: "100% Synced"
+          subtext: "0h/s"
+        - title: "Bitcoin cash"
+          text: "95% Synced"
+          subtext: "0h/s"
+        - title: "Digibyte"
+          text: "100% Synced"
+          subtext: "1.2th/s"
+        - title: "Dogecoin"
+          text: "20% Synced"
+          subtext: "0h/s"
 dependencies: []
 path: ""
 defaultUsername: ""
