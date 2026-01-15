@@ -22,7 +22,8 @@ support: https://github.com/TheRetroMike/ecash
 gallery:
   - https://cryptologos.cc/logos/ecash-xec-logo.png?v=040
 releaseNotes: >-
-  2025.01.13 - Initial Release
+  2026.01.14 - Legacy Mode
+  2026.01.13 - Initial Release
 dependencies: []
 path: ""
 defaultUsername: ""
