@@ -4,7 +4,7 @@ name: eCash (XEC) Node
 tagline: eCash Node. This is a general node app for eCash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the eCash network.
 icon: https://cryptologos.cc/logos/ecash-xec-logo.png?v=040
 category: SOLO Crypto Mining
-version: "1.0.0"
+version: "1.0.1"
 port: 5012
 description: |
   eCash Node. This is a general node app for eCash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the eCash network.
