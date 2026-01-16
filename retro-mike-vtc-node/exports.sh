@@ -1,0 +1,1 @@
+export APP_VERTCOIN_DAT_FILE="${EXPORTS_APP_DIR}/.vertcoin/verthash.dat"

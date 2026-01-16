@@ -1,0 +1,29 @@
+manifestVersion: 1
+id: retro-mike-vtc-node
+name: Vertcoin (VTC) Node
+tagline: Vertcoin Node. This is a general node app for Vertcoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the eCash network.
+icon: https://cryptologos.cc/logos/vertcoin-vtc-logo.png
+category: SOLO Crypto Mining
+version: "1.0.0"
+port: 5013
+description: |
+  eCash Node. This is a general node app for Vertcoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Vertcoin network.
+
+  If you find this app useful, please consider donating
+
+  VTC - vtc1qjpys4wy69fatzx0344ym6jgpvmjd6xmnu603ml
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://github.com/TheRetroMike/vertcoin-core
+repo: https://github.com/TheRetroMike/vertcoin-core
+support: https://github.com/TheRetroMike/vertcoin-core
+gallery:
+  - https://cryptologos.cc/logos/vertcoin-vtc-logo.png
+releaseNotes: |
+  2026.01.15 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
