@@ -4,7 +4,7 @@ name: MiningCore Web UI
 tagline: Web UI for the MiningCore Mining Pool App
 icon: https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
 category: SOLO Crypto Mining
-version: "2.2.1"
+version: "2.3.0"
 port: 8559
 description: |
   Web UI for the MiningCore Mining Pool App. For a full functioning app, you will also need to install the MiningCore App.
@@ -28,6 +28,7 @@ support: https://hub.docker.com/r/theretromike/miningcorewebui
 gallery:
   - https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
 releaseNotes: |
+  2026.01.16 - Added Vertcoin
   2026.01.14 - Fixed XEC Wallet Format
   2026.01.12 - Added Widgets that show configured pools with blocks, hashrate, and node synced status    
   2026.01.11 - Added BitcoinII
