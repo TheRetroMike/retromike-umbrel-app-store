@@ -21,4 +21,4 @@ services:
       - ${APP_DATA_DIR}/.monero:/root/.bitmonero
     ports:
       - 18082:18082  # WALLET_RPC
-    entrypoint: "monero-wallet-rpc --wallet-file /root/.bitmonero/wallet --daemon-host retro-mike-xmr-node_node_1 --daemon-login pooluser:poolpassword --rpc-bind-port 18082 --rpc-bind-ip 0.0.0.0 --confirm-external-bind --rpc-login pooluser:poolpassword"
+    entrypoint: "monero-wallet-rpc --wallet-file /root/.bitmonero/wallet --daemon-address retro-mike-xmr-node_node_1:18081 --daemon-login pooluser:poolpassword --rpc-bind-port 18082 --rpc-bind-ip 0.0.0.0 --disable-rpc-login --log-level 1"
