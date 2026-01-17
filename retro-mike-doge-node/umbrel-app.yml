@@ -3,7 +3,7 @@ id: retro-mike-doge-node
 name: Dogecoin (DOGE) Node
 tagline: Dogecoin Node. This is a general node app for Dogecoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Dogecoin network.
 icon: https://upload.wikimedia.org/wikipedia/en/d/d0/Dogecoin_Logo.png
-category: SOLO Crypto Mining
+category: Mining Nodes
 version: "1.0.0"
 port: 5008
 description: |

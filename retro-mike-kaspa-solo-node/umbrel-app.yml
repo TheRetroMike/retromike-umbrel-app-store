@@ -3,7 +3,7 @@ id: retro-mike-kaspa-solo-node
 name: Kaspa Solo Mining Node
 tagline: Node + Solo Mining Stratum Bridge. Connect your miner on stratum port 5001 and when a block is hit, it will payout to the wallet address you specify in your miner config.
 icon: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Kaspa-logo.svg/250px-Kaspa-logo.svg.png
-category: SOLO Crypto Mining
+category: Standalone Solo Mining Nodes
 version: "1.0.0"
 port: 5005
 description: >-
