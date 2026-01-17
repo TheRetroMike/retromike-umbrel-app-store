@@ -1,0 +1,29 @@
+manifestVersion: 1
+id: retro-mike-xmr-node
+name: Monero (XMR) Node
+tagline: Monero Node. This is a general node app for Vertcoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the eCash network.
+icon: https://cryptologos.cc/logos/monero-xmr-logo.png
+category: SOLO Crypto Mining
+version: "1.0.0"
+port: 5014
+description: |
+  Monero Node. This is a general node app for Monero and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Monero network.
+
+  If you find this app useful, please consider donating
+
+  XMR - 83w7b1n3qyxGwjYnu2Y6ondTVKZhLpNmLMJRnh4brcM3i3hfLGKfU39WNWzWwhXYesGgyXgaMiKFTEjtzgehQbX8VC3MGfJ
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://github.com/TheRetroMike/monero
+repo: https://github.com/TheRetroMike/monero
+support: https://github.com/TheRetroMike/monero
+gallery:
+  - https://cryptologos.cc/logos/monero-xmr-logo.png
+releaseNotes: |
+  2026.01.15 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
