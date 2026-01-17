@@ -18,7 +18,7 @@ services:
     restart: on-failure
     stop_grace_period: 1m
     volumes:
-      - ${APP_DATA_DIR}/.monero:/home/monero/.bitmonero
+      - ${APP_DATA_DIR}/.monero:/root/.bitmonero
     ports:
       - 9009:9009    # RPC
       - 7009:7009    # ZMQ
