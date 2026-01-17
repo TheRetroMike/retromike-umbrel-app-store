@@ -3,7 +3,7 @@ id: retro-mike-bsv-node
 name: Bitcoin SV (BSV) Node
 tagline: Bitcoin SV Node. This is a general node app for Bitcoin SV and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Bitcoin SV network.
 icon: https://cryptologos.cc/logos/bitcoin-sv-bsv-logo.png
-category: SOLO Crypto Mining
+category: Mining Nodes
 version: "1.0.4"
 port: 5010
 description: |
