@@ -6,4 +6,6 @@ if [ ! -f /home/umbrel/umbrel/app-data/retro-mike-xmr-wallet/.monero/default.key
     cd monero-x86_64-linux-gnu-v0.18.4.5
     (echo "1" | ./monero-wallet-cli --password poolpassword --use-english-language-names --generate-new-wallet default) >> /dev/null
     mv default* ../
+    rm -R monero-x86_64-linux-gnu-v0.18.4.5
+    rm monero-linux-x64-v0.18.4.5.tar.bz2
 fi
