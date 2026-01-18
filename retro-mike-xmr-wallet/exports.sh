@@ -1,1 +1,0 @@
-curl -X POST http://retro-mike-xmr-wallet_wallet_1:18082/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"open_wallet","params":{"filename":"default","password":"poolpassword"}}' -H 'Content-Type: application/json'
