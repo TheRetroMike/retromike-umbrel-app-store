@@ -1,4 +1,4 @@
-mkdir -p /home/umbrel/umbrel/retro-mike-xmr-wallet
+mkdir -p /home/umbrel/umbrel/app-data/retro-mike-xmr-wallet/.monero
 if [ ! -f /home/umbrel/umbrel/retro-mike-xmr-wallet/.monero/default.keys ]; then
     wget https://downloads.getmonero.org/cli/monero-linux-x64-v0.18.4.5.tar.bz2
     tar xf monero-linux-x64-v0.18.4.5.tar.bz2
