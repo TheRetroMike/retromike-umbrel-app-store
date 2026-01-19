@@ -17,5 +17,5 @@ services:
     environment:
       - POOL_NAME=Self-Hosted Mining Pool
       - STRATUM_HOST=umbrel.local
-      - API_BASE_URL=http://retro-mike-miningcore-legacy_server_1:4000/api
+      - API_BASE_URL=http://retro-mike-miningcore-legacy_server_1:4001/api
       - PLATFORM=UMBREL 
