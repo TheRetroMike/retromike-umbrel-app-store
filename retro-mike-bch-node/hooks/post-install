@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
-if [ ! -x "/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" ]; then
+
+MC_APP_DIR="/home/umbrel/umbrel/app-data/retro-mike-miningcore"
+POOL_MGR="${MC_APP_DIR}/scripts/pool-manager.sh"
+
+if [[ ! -x "${POOL_MGR}" ]]; then
+  echo "[bch-node] Miningcore pool-manager not found at ${POOL_MGR} (is Miningcore installed?)" >&2
   exit 0
 fi
 
-"/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" register-bitcoin   --pool-id "bch"   --coin "bitcoin-cash"   --app-id "retro-mike-bch-node"   --rpc-port "9002"   --zmq-port "7002"   --stratum-port "6002"   --daemon-host "retro-mike-bch-node_node_1"
+sudo "${POOL_MGR}" register-bitcoin \
+  --pool-id "bch" \
+  --coin "bitcoin-cash" \
+  --app-id "retro-mike-bch-node" \
+  --rpc-port "9002" \
+  --zmq-port "7002" \
+  --stratum-port "6002" \
+  --daemon-host "retro-mike-bch-node_node_1" \
+  --address-type "bcash"
