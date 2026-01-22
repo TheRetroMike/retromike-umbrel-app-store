@@ -1,4 +1,4 @@
-manifestVersion: 1
+manifestVersion: 1.1
 id: retro-mike-miningcore-webui
 name: MiningCore Web UI
 tagline: Web UI for the MiningCore Mining Pool App
@@ -80,7 +80,8 @@ widgets:
           subtext: "Last Synced Block: 01/12/2026 10:12:34"
         - text: "BitcoinSV | 0 H/s | 0 Blocks"
           subtext: "Last Synced Block: INITIAL BLOCK SYNC"
-dependencies: []
+dependencies:
+  - retro-mike-miningcore
 path: ""
 defaultUsername: ""
 defaultPassword: ""

@@ -1,0 +1,32 @@
+manifestVersion: 1.1
+id: retro-mike-mflex-node
+name: Multiflex Node
+tagline: MFLEX full node (for MiningCore)
+icon: https://multiflexcoin.com/img/multiflexicon.png
+category: Nodes
+version: "1.0.10"
+port: 8570
+description: |
+  Multiflex (MFLEX) full node.
+
+  Notes:
+  - This app is intended to be used together with RetroMike's MiningCore app.
+  - The docker image reference in docker-compose.yml is a placeholder. Build/publish an amd64/arm64 image first.
+
+  RPC credentials are defaulted to pooluser/poolpassword to match the other coin node apps.
+
+developer: Multiflex
+website: https://multiflexcoin.com/
+submitter: Community
+submission: https://github.com/Aalnase/multiflexcoin
+repo: https://github.com/Aalnase/multiflexcoin
+support: https://github.com/Aalnase/multiflexcoin/issues
+gallery:
+  - https://multiflexcoin.com/img/multiflexicon.png
+releaseNotes: |
+  Initial release in this Umbrel community store.
+dependencies:
+  - retro-mike-miningcore
+path: ""
+defaultUsername: ""
+defaultPassword: ""

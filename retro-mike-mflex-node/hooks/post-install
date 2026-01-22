@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [ ! -x "/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" ]; then
+  exit 0
+fi
+
+"/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" register-bitcoin --pool-id "mflex" --coin "multiflex" --app-id "retro-mike-mflex-node" --rpc-port "9010" --zmq-port "7010" --stratum-port "6010" --daemon-host "retro-mike-mflex-node_node_1"

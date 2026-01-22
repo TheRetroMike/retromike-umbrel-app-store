@@ -23,4 +23,4 @@ services:
       - 9005:9005    # RPC
       - 7005:7005    # ZMQ
       - 8335:8335    # P2P
-    entrypoint: "bitcoind -printtoconsole -server -prune=550 -wallet=default -zmqpubhashblock=tcp://127.0.0.1:7005 -rpcbind=0.0.0.0 -rpcport=9005 -rpcallowip=0.0.0.0/0 -port=8335 -rpcuser=pooluser -rpcpassword=poolpassword -maxmempool=10000 -maxsigcachesize=250 -maxscriptcachesize=250 -maxorphantx=10000 -maxstackmemoryusageconsensus=1000000000 -excessiveblocksize=10000000000 -minminingtxfee=0.00000500"
+    entrypoint: "bitcoind -printtoconsole -server -prune=550 -wallet=default -zmqpubhashblock=tcp://0.0.0.0:7005 -rpcbind=0.0.0.0 -rpcport=9005 -rpcallowip=0.0.0.0/0 -port=8335 -rpcuser=pooluser -rpcpassword=poolpassword -maxmempool=10000 -maxsigcachesize=250 -maxscriptcachesize=250 -maxorphantx=10000 -maxstackmemoryusageconsensus=1000000000 -excessiveblocksize=10000000000 -minminingtxfee=0.00000500"

@@ -1,4 +1,4 @@
-manifestVersion: 1
+manifestVersion: 1.1
 id: retro-mike-dgb-node-sha256
 name: Digibyte (DGB) Node - SHA256
 tagline: Digibyte Node. Sha256 Algo. This is a general node app for Digibyte and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Digibyte network.
@@ -23,7 +23,8 @@ gallery:
   - https://github.com/DigiByte-Core/digibyte-logos/blob/master/Logos%20Bitmap/transparent%20bg/ClearBg%20DigiByte.png?raw=true
 releaseNotes: >-
   2025.11.16 - Initial Release
-dependencies: []
+dependencies:
+  - retro-mike-miningcore
 path: ""
 defaultUsername: ""
 defaultPassword: ""

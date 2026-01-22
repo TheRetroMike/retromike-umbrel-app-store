@@ -23,4 +23,4 @@ services:
       - 9008:9008    # RPC
       - 7008:7008    # ZMQ
       - 5889:5889    # P2P
-    entrypoint: "vertcoind -printtoconsole -server -prune=550 -wallet=default -zmqpubhashblock=tcp://127.0.0.1:7007 -rpcbind=0.0.0.0 -rpcport=9008 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword"
+    entrypoint: "vertcoind -printtoconsole -server -prune=550 -wallet=default -zmqpubhashblock=tcp://0.0.0.0:7008 -rpcbind=0.0.0.0 -rpcport=9008 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword"

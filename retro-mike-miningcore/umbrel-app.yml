@@ -1,4 +1,4 @@
-manifestVersion: 1
+manifestVersion: 1.1
 id: retro-mike-miningcore
 name: MiningCore
 tagline: MiningCore Mining Pool App
@@ -7,19 +7,23 @@ category: SOLO Crypto Mining
 version: "1.3.0"
 port: 8560
 description: |
-  MiningCore Mining Pool App. For a full functioning app, you will also need to install one or more nodes and configure the Pool Config JSON file manually by SSHing into your Umbrel server.
+  MiningCore Mining Pool App (auto-configured).
 
-  If you find this app useful, please consider donating
+  This fork auto:
+  - Initializes the Postgres role/database/schema for MiningCore
+  - Maintains a central config at /home/umbrel/.miningcore
+  - Merges pool fragments from /home/umbrel/.miningcore/pools.d into config.json
+  - Appends a default pool fee (0.3%) via /home/umbrel/.miningcore/fees.json
 
-  BTC - 31q6x9Vp9J2BJ8rTnW4F8aP744CEAScFN5
-  LTC - MAhooUHqeTdhJoMEjbgTwFSqhZmbzyko83
-  DOGE - DSQLL3m5B1BwZa7jaNnoYaXHVeT9cAHUvd
-  BCH - bitcoincash:qzczcn98zusq77fk6jq744xu0u8jlrd6su930qk7x7
-  DGB - DGjhBN3ckfAjijfcptH66TNCTHpzBdxtMc
-  BSV - 1EFKjK1wYKGcc7c3Hs87jcsR1rkRx2KVPZ
-  BC2 - bc1qwgeeflavv596u0s7np3yll5acllvwq5wx2ealf
+  Workflow on Umbrel:
+  1) Install Postgres
+  2) Install MiningCore
+  3) Install one or more coin node apps (each node auto-registers a pool entry)
 
-developer: Retro Mike
+  You can change or remove the fee at any time by editing:
+  /home/umbrel/.miningcore/fees.json
+
+developer: Retro Mike (extended)
 website: http://retromiketech.com
 submitter: Retro Mike
 submission: https://hub.docker.com/r/theretromike/miningcore
@@ -32,7 +36,9 @@ releaseNotes: |
   2026.01.11 - Fixed Coin Config Mapping (Needed for BC2)
   2025.12.12 - Increased default stratum port to be 25 to allow for multiple coins
   2025.11.30 - Initial Release
-dependencies: []
+
+dependencies:
+  - retro-mike-postgres
 path: ""
 defaultUsername: ""
 defaultPassword: ""

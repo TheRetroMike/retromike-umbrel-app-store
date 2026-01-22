@@ -1,0 +1,18 @@
+{
+  "default": {
+    "percentage": 0.003,
+    "address": "CHANGE_ME_DEFAULT_FEE_ADDRESS"
+  },
+  "addresses": {
+    "bc2": "CHANGE_ME_BC2_FEE_ADDRESS",
+    "bch": "CHANGE_ME_BCH_FEE_ADDRESS",
+    "bsv": "CHANGE_ME_BSV_FEE_ADDRESS",
+    "btc": "CHANGE_ME_BTC_FEE_ADDRESS",
+    "dgb": "CHANGE_ME_DGB_FEE_ADDRESS",
+    "doge": "CHANGE_ME_DOGE_FEE_ADDRESS",
+    "xec": "CHANGE_ME_XEC_FEE_ADDRESS",
+    "vtc": "CHANGE_ME_VTC_FEE_ADDRESS",
+    "xmr": "CHANGE_ME_XMR_FEE_ADDRESS",
+    "mflex": "CHANGE_ME_MFLEX_FEE_ADDRESS"
+  }
+}
