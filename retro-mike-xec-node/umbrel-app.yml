@@ -1,4 +1,4 @@
-manifestVersion: 1
+manifestVersion: 1.1
 id: retro-mike-xec-node
 name: eCash (XEC) Node
 tagline: eCash Node. This is a general node app for eCash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the eCash network.
@@ -24,7 +24,8 @@ gallery:
 releaseNotes: >-
   2026.01.14 - Legacy Mode
   2026.01.13 - Initial Release
-dependencies: []
+dependencies:
+  - retro-mike-miningcore
 path: ""
 defaultUsername: ""
 defaultPassword: ""

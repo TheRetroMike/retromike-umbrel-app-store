@@ -23,4 +23,4 @@ services:
       - 9003:9003    # RPC
       - 7003:7003    # ZMQ
       - 22556:22556  # P2P
-    entrypoint: "dogecoind -printtoconsole -server -prune=2200 -wallet=default -zmqpubhashblock=tcp://127.0.0.1:7003 -rpcbind=0.0.0.0 -rpcport=9003 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword"
+    entrypoint: "dogecoind -printtoconsole -server -prune=2200 -wallet=default -zmqpubhashblock=tcp://0.0.0.0:7003 -rpcbind=0.0.0.0 -rpcport=9003 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword"

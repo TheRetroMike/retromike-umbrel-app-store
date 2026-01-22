@@ -1,4 +1,4 @@
-manifestVersion: 1
+manifestVersion: 1.1
 id: retro-mike-vtc-node
 name: Vertcoin (VTC) Node
 tagline: Vertcoin Node. This is a general node app for Vertcoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the eCash network.
@@ -23,7 +23,8 @@ gallery:
   - https://cryptologos.cc/logos/vertcoin-vtc-logo.png
 releaseNotes: |
   2026.01.15 - Initial Release
-dependencies: []
+dependencies:
+  - retro-mike-miningcore
 path: ""
 defaultUsername: ""
 defaultPassword: ""
