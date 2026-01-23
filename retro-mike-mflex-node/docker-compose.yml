@@ -16,8 +16,7 @@ services:
       - node
 
   node:
-    # TODO: publish your Multiflex docker image (amd64/arm64) and replace this
-    image: ghcr.io/CHANGE_ME/multiflexd:1.0.10
+    image: ghcr.io/aalnase/mflex-node:1.11.0rc1-mflex2
     restart: on-failure
     stop_grace_period: 1m
     volumes:
@@ -25,5 +24,5 @@ services:
     ports:
       - 9010:9010    # RPC
       - 7010:7010    # ZMQ
-      - 8337:8337    # P2P
-    entrypoint: "multiflexd -printtoconsole -server -prune=550 -wallet=default -zmqpubhashblock=tcp://0.0.0.0:7010 -rpcbind=0.0.0.0 -rpcport=9010 -rpcallowip=0.0.0.0/0 -port=8337 -rpcuser=pooluser -rpcpassword=poolpassword"
+      - 24200:24200  # P2P
+    entrypoint: "multiflexd -printtoconsole -server -prune=550 -rpcbind=0.0.0.0 -rpcport=9010 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword -zmqpubhashblock=tcp://0.0.0.0:7010 -port=24200 -addresstype=legacy -changetype=legacy"

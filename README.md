@@ -1,6 +1,6 @@
 # RetroMike Umbrel App Store (Auto-Configured MiningCore Fork)
 
-This is a fork of RetroMike's Umbrel community app store with a focus on **MiningCore SOLO pool automation**.
+This is a fork of RetroMike's Umbrel community app store with a focus on **MiningCore SOLO pool automation**. Without this Fork Multiflex will not work!
 
 ## What’s new
 

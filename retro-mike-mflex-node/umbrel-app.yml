@@ -4,29 +4,36 @@ name: Multiflex Node
 tagline: MFLEX full node (for MiningCore)
 icon: https://multiflexcoin.com/img/multiflexicon.png
 category: Mining Nodes
-version: "1.0.10"
+version: "1.0.11"
 port: 8570
+
 description: |
-  Multiflex (MFLEX) full node.
+  Multiflex (MFLEX) full node for MiningCore.
+
+  Defaults:
+  - RPC: 9010 (user: pooluser / pass: poolpassword)
+  - ZMQ: 7010 (hashblock)
+  - P2P: 24200
+  - prune=550
 
   Notes:
-  - This app is intended to be used together with RetroMike's MiningCore app.
-  - The docker image reference in docker-compose.yml is a placeholder. Build/publish an amd64/arm64 image first.
-
-  RPC credentials are defaulted to pooluser/poolpassword to match the other coin node apps.
+  - Install MiningCore first, then install this node.
+  - Pool wallet addresses are forced to legacy format to avoid bech32 HRP issues.
 
 developer: Multiflex
 website: https://multiflexcoin.com/
-submitter: Community
+submitter: Aalnase
 submission: https://github.com/Aalnase/multiflexcoin
 repo: https://github.com/Aalnase/multiflexcoin
 support: https://github.com/Aalnase/multiflexcoin/issues
 gallery:
   - https://multiflexcoin.com/img/multiflexicon.png
 releaseNotes: |
-  Initial release in this Umbrel community store.
-dependencies:
-  - retro-mike-miningcore
+  2026.01.23 - Remove placeholder text, correct ports, legacy address defaults.
+
+# IMPORTANT: disable dependencies to avoid Umbrel UI crash on "Requires" click
+dependencies: []
+
 path: ""
 defaultUsername: ""
 defaultPassword: ""
