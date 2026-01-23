@@ -21,5 +21,4 @@ RUN set -eux; \
     if [ -n "${MFLEXCLI}" ]; then ln -sf "${MFLEXCLI}" /usr/local/bin/multiflex-cli; fi
 
 EXPOSE 9010 7010 24200
-WORKDIR /root
 ENTRYPOINT ["multiflexd"]
