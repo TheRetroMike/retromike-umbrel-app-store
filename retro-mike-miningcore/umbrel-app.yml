@@ -7,7 +7,7 @@ category: SOLO Crypto Mining
 version: "1.3.0-mflex1"
 port: 8560
 description: |
-  MiningCore Mining Pool App (auto-configured).
+  MiningCore Mining Pool App (auto-configured). Note: Without this Fork Multiflex will not work!
 
   This fork auto:
   - Initializes the Postgres role/database/schema for MiningCore
