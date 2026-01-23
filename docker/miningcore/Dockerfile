@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /src
 
-# Base Miningcore (dev) + Patch ZIP drüber (wie du willst: "vor dem kompilieren ins src")
+# Base Miningcore (dev) + Patch ZIP drüber
 RUN git clone --branch dev https://github.com/xiaolin1579/miningcore.git miningcore
 WORKDIR /src/miningcore
 RUN git fetch --tags --force || true
@@ -26,12 +26,18 @@ RUN dotnet publish -c Release --framework net6.0 -o /app/build
 # ✅ IMPORTANT: aspnet runtime includes Microsoft.AspNetCore.App
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-jammy AS runtime
 
-# native runtime libs (safe set; miningcore uses native deps)
+# native runtime libs + symlinks for zmq/sodium
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libzmq5 libsodium23 libgmp10 zlib1g libc++1 \
+ && ln -sf /usr/lib/x86_64-linux-gnu/libzmq.so.5 /usr/lib/x86_64-linux-gnu/libzmq.so \
+ && ln -sf /usr/lib/x86_64-linux-gnu/libzmq.so.5 /usr/lib/x86_64-linux-gnu/liblibzmq.so \
+ && ln -sf /usr/lib/x86_64-linux-gnu/libsodium.so.23 /usr/lib/x86_64-linux-gnu/libsodium.so \
+ && ln -sf /usr/lib/x86_64-linux-gnu/libsodium.so.23 /usr/lib/x86_64-linux-gnu/liblibsodium.so \
+ && ldconfig \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/build
 COPY --from=build /app/build/ /app/build/
 
 ENTRYPOINT ["dotnet","/app/build/Miningcore.dll","-c","/app/config.json"]
+
