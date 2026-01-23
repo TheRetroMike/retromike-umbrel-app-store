@@ -4,28 +4,34 @@ name: Multiflex Node
 tagline: MFLEX full node (for MiningCore)
 icon: https://multiflexcoin.com/img/multiflexicon.png
 category: Mining Nodes
-version: "1.11.0rc1-mflex2-1"
-port: 5015
+version: "1.11.0rc1-mflex2-umbrel1"
+port: 8570
+
 description: |
-  Multiflex (MFLEX) full node for MiningCore.
+  Multiflex (MFLEX) full node for Umbrel – intended for RetroMike MiningCore.
 
   Defaults:
   - RPC: 9010 (user: pooluser / pass: poolpassword)
-  - ZMQ: 7010
+  - ZMQ: 7010 (hashblock)
   - P2P: 24200
+  - Prune: 550MiB
 
-  NOTE: Pool wallet addresses are forced to legacy format (addresstype=legacy, changetype=legacy).
+  Install behavior:
+  - If MiningCore is installed, this app auto-registers the MFLEX pool (pool-id: mflex) via pool-manager and restarts MiningCore.
+
+  Address format:
+  - Pool wallet addresses are forced to legacy format to avoid bech32 HRP issues.
 
 developer: Multiflex
 website: https://multiflexcoin.com/
 submitter: Aalnase
-submission: https://github.com/Aalnase/multiflexcoin
+submission: https://github.com/Aalnase/retromike-umbrel-app-store
 repo: https://github.com/Aalnase/multiflexcoin
 support: https://github.com/Aalnase/multiflexcoin/issues
 gallery:
   - https://multiflexcoin.com/img/multiflexicon.png
 releaseNotes: |
-  2026-01-23 - First working MFLEX node integration (amd64), legacy addresses default, ports aligned with MiningCore.
+  2026-01-23 - Real amd64 image, correct ports (24200/9010/7010), legacy address defaults, MiningCore auto-registration.
 dependencies:
   - retro-mike-miningcore
 path: ""
