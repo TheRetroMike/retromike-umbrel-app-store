@@ -3,7 +3,7 @@ id: retro-mike-mflex-node
 name: Multiflex Node
 tagline: MFLEX full node (for MiningCore)
 icon: https://multiflexcoin.com/img/multiflexicon.png
-category: Nodes
+category: Mining Nodes
 version: "1.0.10"
 port: 8570
 description: |
