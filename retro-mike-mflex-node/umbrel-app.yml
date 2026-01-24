@@ -1,38 +1,39 @@
-manifestVersion: 1.1
+manifestVersion: 1
 id: retro-mike-mflex-node
 name: Multiflex Node
 tagline: MFLEX full node (for MiningCore)
 icon: https://multiflexcoin.com/img/multiflexicon.png
 category: Mining Nodes
-version: "1.0.11"
+version: "1.0.12"
 port: 8570
 
 description: |
-  Multiflex (MFLEX) full node for MiningCore.
+  Multiflex (MFLEX) full node for Umbrel – intended to be used with RetroMike MiningCore.
 
   Defaults:
   - RPC: 9010 (user: pooluser / pass: poolpassword)
   - ZMQ: 7010 (hashblock)
   - P2P: 24200
-  - prune=550
+  - Prune: 550 MiB
 
-  Notes:
-  - Install MiningCore first, then install this node.
-  - Pool wallet addresses are forced to legacy format to avoid bech32 HRP issues.
+  This app auto-registers itself into MiningCore:
+  - creates/loads wallet "pool"
+  - generates a pool address
+  - writes ~/.miningcore/pools.d/mflex.json
+  - enables MFLEX-specific pool switch in MiningCore config
 
 developer: Multiflex
-website: https://multiflexcoin.com/
+website: https://github.com/Aalnase/multiflexcoin
 submitter: Aalnase
-submission: https://github.com/Aalnase/multiflexcoin
+submission: https://github.com/Aalnase/retromike-umbrel-app-store
 repo: https://github.com/Aalnase/multiflexcoin
 support: https://github.com/Aalnase/multiflexcoin/issues
-gallery:
-  - https://multiflexcoin.com/img/multiflexicon.png
+gallery: []
 releaseNotes: |
-  2026.01.23 - Remove placeholder text, correct ports, legacy address defaults.
+  2026.01.24 - Auto wallet bootstrap + auto MiningCore pool registration; category fixed; dependencies restored.
 
-# IMPORTANT: disable dependencies to avoid Umbrel UI crash on "Requires" click
-dependencies: []
+dependencies:
+  - retro-mike-miningcore
 
 path: ""
 defaultUsername: ""
