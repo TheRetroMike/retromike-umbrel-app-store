@@ -176,8 +176,24 @@ if address_type:
 if mflex_enabled:
   pool["mflex"]={"enabled": True}
 
+# fees.json optional -> rewardRecipients überall einfügen
+fees_path = Path("/home/umbrel/.miningcore/fees.json")
+if fees_path.exists():
+  try:
+    fees = json.loads(fees_path.read_text())
+    rr = fees.get("rewardRecipients")
+    if isinstance(rr, list) and rr:
+      pool["rewardRecipients"] = rr
+  except Exception:
+    pass
+
 if app_id:
-  pool["_umbrel"]={"appId": app_id}
+  pool["_umbrel"] = {
+    "appId": app_id,
+    "rpcPort": rpc_port,
+    "zmqPort": zmq_port,
+    "stratumPort": stratum_port
+  }
 
 out=Path("/home/umbrel/.miningcore/pools.d")/f"{pool_id}.json"
 out.write_text(json.dumps(pool, indent=2))
