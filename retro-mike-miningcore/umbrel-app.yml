@@ -4,7 +4,7 @@ name: MiningCore
 tagline: MiningCore Mining Pool App
 icon: https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
 category: SOLO Crypto Mining
-version: "1.3.0-mflex3"
+version: "1.3.0-mflex4"
 port: 8560
 description: |
   MiningCore Mining Pool App (auto-configured). Note: Without this Fork Multiflex will not work!
