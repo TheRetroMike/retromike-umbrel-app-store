@@ -4,7 +4,7 @@ name: Bitcoin Cash (BCH) Node
 tagline: Bitcoin Cash Node. This is a general node app for Bitcoin Cash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Bitcoin Cash network.
 icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
 category: Mining Nodes
-version: "1.0.0"
+version: "1.0.0-umbrel1"
 port: 5007
 description: |
   Bitcoin Cash Node. This is a general node app for Bitcoin Cash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Bitcoin Cash network.
