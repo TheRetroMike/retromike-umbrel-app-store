@@ -21,6 +21,7 @@ services:
     stop_grace_period: 1m
     volumes:
       - ${APP_DATA_DIR}/.multiflex:/root/.multiflex
+      - /home/umbrel/.miningcore/wallet-backups:/backups
     ports:
       - 9010:9010    # RPC
       - 7010:7010    # ZMQ
