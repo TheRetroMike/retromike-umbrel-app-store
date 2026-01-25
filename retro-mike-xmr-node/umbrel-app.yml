@@ -4,7 +4,7 @@ name: Monero (XMR) Node
 tagline: Monero Node. This is a general node app for Monero and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the eCash network.
 icon: https://cryptologos.cc/logos/monero-xmr-logo.png
 category: Untested Mining Nodes
-version: "1.0.3"
+version: "1.0.3-umbrel1"
 port: 5014
 description: |
   Monero Node. This is a general node app for Monero and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Monero network.

@@ -1,0 +1,33 @@
+manifestVersion: 1
+id: retro-mike-wallet-tools
+name: Wallet Tools
+tagline: Backup wallets + upload restore files (shows SSH restore commands)
+icon: https://raw.githubusercontent.com/getumbrel/umbrel-apps/master/umbrel-logo.svg
+category: Utilities
+version: "0.1.0"
+port: 8575
+
+description: |
+  Simple wallet tools for MiningCore pool nodes:
+  - Create/Load wallet "pool" (optional)
+  - Backup a selected wallet via RPC (backupwallet) to /home/umbrel/.miningcore/wallet-backups/
+  - Upload a wallet file and get the SSH commands to restore manually.
+
+  Security note:
+  This app handles sensitive wallet backups. Only use on trusted LAN. Remove backups when not needed.
+
+developer: Community
+website: ""
+submitter: Aalnase
+submission: https://github.com/Aalnase/retromike-umbrel-app-store
+repo: https://github.com/Aalnase/retromike-umbrel-app-store
+support: https://github.com/Aalnase/retromike-umbrel-app-store/issues
+gallery: []
+releaseNotes: |
+  Initial release.
+
+dependencies: []
+
+path: ""
+defaultUsername: ""
+defaultPassword: ""
