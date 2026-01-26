@@ -2,7 +2,7 @@ manifestVersion: 1
 id: retro-mike-mflex-node
 name: Multiflex (MFLEX) Node
 tagline: MFLEX full node (for MiningCore)
-icon: https://multiflexcoin.com/img/multiflexicon.png
+icon: https://go-poolmining.com/img/icons/mflex.png
 category: Mining Nodes
 version: "1.0.15-umbrel1"
 port: 8570
