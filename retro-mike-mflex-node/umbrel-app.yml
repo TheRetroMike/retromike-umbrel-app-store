@@ -1,6 +1,6 @@
 manifestVersion: 1
 id: retro-mike-mflex-node
-name: Multiflex Node
+name: Multiflex (MFLEX) Node
 tagline: MFLEX full node (for MiningCore)
 icon: https://multiflexcoin.com/img/multiflexicon.png
 category: Mining Nodes
