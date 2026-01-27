@@ -1,0 +1,29 @@
+manifestVersion: 1
+id: retro-mike-ppc-node
+name: Peercoin (PPC) Node
+tagline: Peercoin Node. This is a general node app for Peercoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Peercoin.
+icon: https://cryptologos.cc/logos/peercoin-ppc-logo.png
+category: Mining Nodes
+version: "1.0.0"
+port: 5016
+description: |
+  Peercoin Node. This is a general node app for Peercoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Peercoin.
+
+  If you find this app useful, please consider donating
+
+  PPC - PJ6sLigV5pv2jfJNqTzbhkWiRG3cscPjAA
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission:https://github.com/TheRetroMike/peercoin
+repo: https://github.com/TheRetroMike/peercoin
+support: https://github.com/TheRetroMike/peercoin
+gallery:
+  - https://cryptologos.cc/logos/peercoin-ppc-logo.pn
+releaseNotes: >-
+  2026.01.11 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
