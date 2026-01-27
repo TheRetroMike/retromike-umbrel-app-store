@@ -26,4 +26,38 @@ services:
       - 9010:9010    # RPC
       - 7010:7010    # ZMQ
       - 24200:24200  # P2P
-    entrypoint: "multiflexd -printtoconsole -server -prune=550 -rpcbind=0.0.0.0 -rpcport=9010 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword -zmqpubhashblock=tcp://0.0.0.0:7010 -port=24200 -addresstype=legacy -changetype=legacy"
+    entrypoint: "multiflexd -printtoconsole -server -prune=550 -rpcbind=0.0.0.0 -rpcport=9010 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword -wallet=pool -zmqpubhashblock=tcp://0.0.0.0:7010 -port=24200 -addresstype=legacy -changetype=legacy"
+  wallet_init:
+    image: curlimages/curl:8.6.0
+    restart: unless-stopped
+    depends_on:
+      - node
+    networks:
+      - umbrel_main_network
+    volumes:
+      - ./scripts/wallet-init.sh:/wallet-init.sh:ro
+    environment:
+      RPC_HOST: node
+      RPC_PORT: "9010"
+      RPC_USER: pooluser
+      RPC_PASS: poolpassword
+      WALLET_NAME: pool
+      WAIT_SECS: "120"
+      SLEEP_SECS: "30"
+    command: ["sh","-lc","/wallet-init.sh"]
+
+
+  wallet_autoload:
+    image: curlimages/curl:8.6.0
+    restart: unless-stopped
+    depends_on:
+      - node
+    network_mode: "service:node"
+    volumes:
+      - ./scripts/wallet-autoload.sh:/wallet-autoload.sh:ro
+    entrypoint: ["/bin/sh","/wallet-autoload.sh"]
+    environment:
+      RPC_PORT: "9010"
+      RPC_USER: "pooluser"
+      RPC_PASS: "poolpassword"
+      WALLET_NAME: "pool"
