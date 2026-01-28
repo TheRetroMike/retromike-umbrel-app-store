@@ -20,7 +20,7 @@ submission:https://github.com/TheRetroMike/peercoin
 repo: https://github.com/TheRetroMike/peercoin
 support: https://github.com/TheRetroMike/peercoin
 gallery:
-  - https://cryptologos.cc/logos/peercoin-ppc-logo.pn
+  - https://cryptologos.cc/logos/peercoin-ppc-logo.png
 releaseNotes: >-
   2026.01.11 - Initial Release
 dependencies: []
