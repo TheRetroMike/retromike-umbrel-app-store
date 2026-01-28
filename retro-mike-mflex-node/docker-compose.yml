@@ -33,7 +33,7 @@ services:
     depends_on:
       - node
     networks:
-      - umbrel_main_network
+      - default
     volumes:
       - ./scripts/wallet-init.sh:/wallet-init.sh:ro
     environment:
