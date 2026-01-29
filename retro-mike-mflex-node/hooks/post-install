@@ -1,34 +1,57 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+APP_ID="retro-mike-mflex-node"
 MC_HOME="/home/umbrel/.miningcore"
-mkdir -p "${MC_HOME}/pools.d" "${MC_HOME}/wallet-backups"
-chown -R umbrel:umbrel "${MC_HOME}" || true
-find "${MC_HOME}" -type d -exec chmod 755 {} + || true
-find "${MC_HOME}" -type f -exec chmod 644 {} + || true
+POOL_MANAGER="/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh"
 
-PM="/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh"
-[ -x "${PM}" ] || exit 0
+echo "[${APP_ID}] post-install: try to auto-register MFLEX pool in Miningcore"
 
-ARGS=( register-bitcoin
-  --pool-id "mflex"
-  --coin "multiflex"
-  --app-id "retro-mike-mflex-node"
-  --rpc-port "9010"
-  --zmq-port "7010"
-  --stratum-port "6010"
-  --daemon-host "retro-mike-mflex-node_node_1"
-  --rpc-wallet "pool"
-  --getnewaddress-params '["","legacy"]'
-  --mflex-enabled
-)
-
-# Run pool-manager as root (needs docker access) but it will repair ownership
-# of /home/umbrel/.miningcore automatically.
-# Cap runtime so the Umbrel installer can't hang forever.
-timeout 600 "${PM}" "${ARGS[@]}" || {
-  echo "[post-install] WARN: Pool registration failed/timed out."
-  echo "You can rerun manually:"
-  echo "  sudo ${PM} ${ARGS[*]}"
+if [[ ! -x "${POOL_MANAGER}" ]]; then
+  echo "[${APP_ID}] Miningcore not installed yet (pool-manager missing) -> skip auto-register"
   exit 0
-}
+fi
+
+# Miningcore needs its base config files first
+if [[ ! -f "${MC_HOME}/config.base.json" ]]; then
+  echo "[${APP_ID}] ${MC_HOME}/config.base.json missing -> skip auto-register (Miningcore not ready yet)"
+  exit 0
+fi
+
+# Hard timeout so Umbrel install doesn't hang forever at ~92%
+PM_TIMEOUT_SECS=300
+
+set +e
+timeout "${PM_TIMEOUT_SECS}" "${POOL_MANAGER}" register-bitcoin \
+  --pool-id mflex \
+  --coin multiflex \
+  --app-id "${APP_ID}" \
+  --rpc-port 9010 \
+  --zmq-port 7010 \
+  --stratum-port 6010 \
+  --daemon-host ${APP_ID}_node_1 \
+  --rpc-wallet pool \
+  --getnewaddress-params '["","legacy"]' \
+  --mflex-enabled
+RC=$?
+set -e
+
+if [[ "${RC}" -eq 0 ]]; then
+  echo "[${APP_ID}] OK: MFLEX pool registered"
+elif [[ "${RC}" -eq 124 ]]; then
+  echo "[${APP_ID}] WARN: pool-manager timed out after ${PM_TIMEOUT_SECS}s (RPC not ready yet)."
+  echo "[${APP_ID}]      Re-run later via SSH:"
+  echo "[${APP_ID}]      sudo ${POOL_MANAGER} register-bitcoin --pool-id mflex --coin multiflex --app-id ${APP_ID} --rpc-port 9010 --zmq-port 7010 --stratum-port 6010 --daemon-host ${APP_ID}_node_1 --rpc-wallet pool --getnewaddress-params '[\"\",\"legacy\"]' --mflex-enabled"
+else
+  echo "[${APP_ID}] WARN: pool-manager failed (rc=${RC}). Check Miningcore + MFLEX node logs."
+fi
+
+# Fix ownership/permissions (hooks run as root -> pools.d/config.json would otherwise become root-owned)
+if [[ -d "${MC_HOME}" ]]; then
+  echo "[${APP_ID}] Fix perms for ${MC_HOME}"
+  chown -R umbrel:umbrel "${MC_HOME}" || true
+  find "${MC_HOME}" -type d -exec chmod 755 {} + || true
+  find "${MC_HOME}" -type f -exec chmod 644 {} + || true
+fi
+
+echo "[${APP_ID}] post-install done"

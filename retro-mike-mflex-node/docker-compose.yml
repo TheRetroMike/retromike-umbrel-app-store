@@ -1,52 +1,58 @@
-version: "3.7"
+# NOTE: Umbrel uses docker-compose (v2). 'version:' is intentionally omitted.
+networks:
+  umbrel_main_network:
+    external: true
 
 services:
   app_proxy:
+    networks:
+      - umbrel_main_network
     environment:
       APP_HOST: retro-mike-mflex-node_web_1
       APP_PORT: 8080
 
   web:
+    networks:
+      - umbrel_main_network
     image: amir20/dozzle:v8.12.8
     restart: on-failure
-    stop_grace_period: 1m
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOZZLE_LEVEL: info
 
   node:
+    networks:
+      - umbrel_main_network
     image: ghcr.io/aalnase/mflex-node:1.11.0rc1-mflex2
     restart: on-failure
-    stop_grace_period: 1m
     volumes:
       - ${APP_DATA_DIR}/.multiflex:/root/.multiflex
-      - /home/umbrel/.miningcore/wallet-backups:/backups
+      - ${APP_DATA_DIR}/wallet-backups:/backups
     ports:
-      - "9010:9010"
-      - "7010:7010"
-      - "24200:24200"
-    entrypoint:
-      - /bin/sh
-      - -lc
-      - |
-        set -e
+      - "7010:7010"   # ZMQ
+      - "9010:9010"   # RPC
+      - "24200:24200" # P2P
+    entrypoint: ["/bin/sh", "-lc"]
+    command: |
+      WALLET="pool"
+      WALLET_PATH="/root/.multiflex/${WALLET}"
 
-        DATADIR="/root/.multiflex"
-        WALLET_ARG=""
-
-        # Only pass -wallet=pool if the wallet directory actually exists and is non-empty.
-        # This avoids a hard-fail on fresh installs (wallet not created yet).
-        if [ -d "${DATADIR}/pool" ] && [ -n "$(ls -A "${DATADIR}/pool" 2>/dev/null || true)" ]; then
-          WALLET_ARG="-wallet=pool"
-        fi
-
+      if [ -d "${WALLET_PATH}" ] || [ -f "${WALLET_PATH}/wallet.dat" ]; then
+        echo "[mflex-node] Wallet '${WALLET}' exists -> starting with -wallet=${WALLET}"
         exec multiflexd -printtoconsole -server -prune=550 \
-          -rpcbind=0.0.0.0 -rpcport=9010 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword \
-          ${WALLET_ARG} \
+          -rpcbind=0.0.0.0 -rpcport=9010 -rpcallowip=0.0.0.0/0 \
+          -rpcuser=pooluser -rpcpassword=poolpassword \
+          -wallet="${WALLET}" \
           -zmqpubhashblock=tcp://0.0.0.0:7010 \
           -port=24200 \
           -addresstype=legacy -changetype=legacy
-
-networks:
-  default:
-    external: true
-    name: umbrel_main_network
+      else
+        echo "[mflex-node] Wallet '${WALLET}' missing -> starting WITHOUT -wallet"
+        exec multiflexd -printtoconsole -server -prune=550 \
+          -rpcbind=0.0.0.0 -rpcport=9010 -rpcallowip=0.0.0.0/0 \
+          -rpcuser=pooluser -rpcpassword=poolpassword \
+          -zmqpubhashblock=tcp://0.0.0.0:7010 \
+          -port=24200 \
+          -addresstype=legacy -changetype=legacy
+      fi
