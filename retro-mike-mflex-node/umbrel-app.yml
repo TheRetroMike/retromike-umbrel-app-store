@@ -1,6 +1,6 @@
 id: retro-mike-mflex-node
 name: MultiFlex Node
-version: 1.0.17-umbrel3
+version: 1.0.17-umbrel4
 tagline: MultiFlex Node for Umbrel with Miningcore integration
 description: >
   MultiFlex full node for Umbrel.
