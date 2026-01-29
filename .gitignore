@@ -1,1 +1,11 @@
+# macOS
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Editors
+*.swp
+*.swo

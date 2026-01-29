@@ -1,105 +1,75 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_ID="retro-mike-miningcore"
-APP_DATA_DIR="/home/umbrel/umbrel/app-data/${APP_ID}"
-MC_HOME="/home/umbrel/.miningcore"
+APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# 1) Ensure central config directories exist
-mkdir -p "${MC_HOME}/pools.d"
+MC_DIR="/home/umbrel/.miningcore"
+POOLS_DIR="${MC_DIR}/pools.d"
 
-# 2) Seed base files on first run (do NOT overwrite user changes)
-if [ ! -f "${MC_HOME}/config.base.json" ]; then
-  cp "${APP_DATA_DIR}/assets/config.base.json" "${MC_HOME}/config.base.json"
-fi
-if [ ! -f "${MC_HOME}/fees.json" ]; then
-  cp "${APP_DATA_DIR}/assets/fees.json" "${MC_HOME}/fees.json"
-fi
-if [ ! -f "${MC_HOME}/coins.json" ]; then
-  # use the repo's coins.json as initial seed
-  cp "${APP_DATA_DIR}/coins.json" "${MC_HOME}/coins.json"
-fi
+mkdir -p "${POOLS_DIR}"
 
-# Ensure correct permissions for MiningCore container (runs as 1000:1000)
-chown -R 1000:1000 "${MC_HOME}" || true
+seed_if_missing() {
+  local src="$1"
+  local dst="$2"
 
-# 3) Best-effort cleanup of stale pool fragments (if uninstall hooks didn't run)
-#    We only delete fragments that declare an owning appId and the app-data dir no longer exists.
-if command -v python3 >/dev/null 2>&1; then
-  python3 - <<'PY'
-import glob, json, os
-mc_home = "/home/umbrel/.miningcore"
-pools_dir = os.path.join(mc_home, "pools.d")
-for path in glob.glob(os.path.join(pools_dir, "*.json")):
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        meta = data.get("_umbrel") if isinstance(data, dict) else None
-        app_id = meta.get("appId") if isinstance(meta, dict) else None
-        if app_id:
-            app_data_dir = f"/home/umbrel/umbrel/app-data/{app_id}"
-            if not os.path.isdir(app_data_dir):
-                os.remove(path)
-    except Exception:
-        pass
-PY
-fi
+  if [[ ! -f "${dst}" ]]; then
+    echo "[pre-start] Seeding ${dst} from ${src}"
+    cp "${src}" "${dst}"
+    chown umbrel:umbrel "${dst}" 2>/dev/null || true
+    chmod 0644 "${dst}" 2>/dev/null || true
+  fi
+}
 
-# 4) Init Postgres schema (idempotent)
-PG_PROJECT="retro-mike-postgres"
-PG_SERVICE="db"
-PG_CONTAINER_ID=""
+# Base files (only if missing)
+seed_if_missing "${APP_DIR}/assets/config.base.json" "${MC_DIR}/config.base.json"
+seed_if_missing "${APP_DIR}/coins.json"             "${MC_DIR}/coins.json"
+seed_if_missing "${APP_DIR}/assets/fees.json"       "${MC_DIR}/fees.json"
 
-for _i in $(seq 1 60); do
-  PG_CONTAINER_ID=$(docker ps -q --filter "label=com.docker.compose.project=${PG_PROJECT}" --filter "label=com.docker.compose.service=${PG_SERVICE}" | head -n 1 || true)
-  if [ -n "${PG_CONTAINER_ID}" ]; then
-    break
+# Always render config.json (keeps it in sync with pools.d)
+echo "[pre-start] Rendering ${MC_DIR}/config.json"
+python3 "${APP_DIR}/scripts/render-config.py" || true
+
+# Postgres init (idempotent, with readiness wait)
+POSTGRES_CONTAINER="retro-mike-postgres_db_1"
+
+for i in {1..60}; do
+  if docker ps --format '{{.Names}}' | grep -q "^${POSTGRES_CONTAINER}$"; then
+    if docker exec "${POSTGRES_CONTAINER}" pg_isready -U umbrel -d umbrel >/dev/null 2>&1; then
+      break
+    fi
   fi
   sleep 1
 done
 
-if [ -z "${PG_CONTAINER_ID}" ]; then
-  echo "[MiningCore pre-start] WARN: Postgres container not found (retro-mike-postgres). Skipping DB init." >&2
-else
-  # Wait for Postgres to accept connections
-  for _i in $(seq 1 60); do
-    if docker exec "${PG_CONTAINER_ID}" pg_isready -U umbrel -d umbrel >/dev/null 2>&1; then
-      break
-    fi
-    sleep 1
-  done
+if ! docker ps --format '{{.Names}}' | grep -q "^${POSTGRES_CONTAINER}$"; then
+  echo "[pre-start] Postgres container not found; skipping DB init."
+  exit 0
+fi
 
-  # Create role/db if missing
-  docker exec -i "${PG_CONTAINER_ID}" psql -U umbrel -d umbrel <<'SQL'
+if ! docker exec "${POSTGRES_CONTAINER}" pg_isready -U umbrel -d umbrel >/dev/null 2>&1; then
+  echo "[pre-start] Postgres not ready; skipping DB init."
+  exit 0
+fi
+
+echo "[pre-start] Initializing MiningCore schema in Postgres (idempotent)"
+docker exec -i "${POSTGRES_CONTAINER}" psql -v ON_ERROR_STOP=1 -U umbrel -d umbrel <<'SQL'
 DO $$
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'miningcore') THEN
+  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'miningcore') THEN
     CREATE ROLE miningcore LOGIN PASSWORD 'miningcore';
   END IF;
 END
 $$;
 
-SELECT 'CREATE DATABASE miningcore OWNER miningcore'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'miningcore')\gexec
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'miningcore') THEN
+    CREATE DATABASE miningcore OWNER miningcore;
+  END IF;
+END
+$$;
 SQL
 
-  # Create schema (idempotent)
-  cat "${APP_DATA_DIR}/assets/miningcore-schema.sql" | docker exec -i "${PG_CONTAINER_ID}" psql -U umbrel -d miningcore
-fi
+docker exec -i "${POSTGRES_CONTAINER}" psql -v ON_ERROR_STOP=1 -U miningcore -d miningcore < "${APP_DIR}/assets/miningcore.sql"
 
-# 5) Render final config.json
-export MININGCORE_HOME="${MC_HOME}"
-
-if command -v python3 >/dev/null 2>&1; then
-  python3 "${APP_DATA_DIR}/scripts/render-config.py" || true
-else
-  # Fallback: run python via a temporary container
-  docker run --rm \
-    -v "${MC_HOME}":/work \
-    -v "${APP_DATA_DIR}/scripts":/scripts:ro \
-    -w /work \
-    python:3.12-alpine \
-    python "/scripts/render-config.py" || true
-fi
-
-chown -R 1000:1000 "${MC_HOME}" || true
+echo "[pre-start] Done"

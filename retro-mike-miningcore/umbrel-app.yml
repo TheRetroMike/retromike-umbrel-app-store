@@ -1,44 +1,36 @@
 manifestVersion: 1.1.1
 id: retro-mike-miningcore
-name: MiningCore
-tagline: MiningCore Mining Pool App
-icon: https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
+name: MiningCore (MFLEX)
+tagline: Umbrel package of MiningCore with MFLEX support (Solo Mining)
+icon: https://raw.githubusercontent.com/ralexstokes/miningcore/master/doc/logo.svg
 category: SOLO Crypto Mining
-version: "1.3.0-mflex7"
-port: 8560
-description: |
-  MiningCore Mining Pool App (auto-configured). Note: Without this Fork Multiflex will not work!
+version: "1.3.0-mflex7-umbrel1"
+port: 8033
+description: >-
+  This is the Miningcore pool from https://github.com/oliverw/miningcore.
 
-  This fork auto:
-  - Initializes the Postgres role/database/schema for MiningCore
-  - Maintains a central config at /home/umbrel/.miningcore
-  - Merges pool fragments from /home/umbrel/.miningcore/pools.d into config.json
-  - Appends a default pool fee (0.3%) via /home/umbrel/.miningcore/fees.json
+  It can be used for many sha256 coins based on Bitcoin Core; including MultiFlex Coin (MFLEX).
+
+  The app auto-initializes the required Postgres database + schema and renders
+  /home/umbrel/.miningcore/config.json from pool fragments in /home/umbrel/.miningcore/pools.d/.
 
   Workflow on Umbrel:
   1) Install Postgres
   2) Install MiningCore
-  3) Install one or more coin node apps (each node auto-registers a pool entry)
-
+  3) Install coin node apps (e.g., MFLEX Node) to auto-register pools
   You can change or remove the fee at any time by editing:
   /home/umbrel/.miningcore/fees.json
 
-developer: Retro Mike (extended)
-website: http://retromiketech.com
-submitter: Retro Mike
-submission: https://hub.docker.com/r/theretromike/miningcore
-repo: https://hub.docker.com/r/theretromike/miningcore
-support: https://hub.docker.com/r/theretromike/miningcore
-gallery:
-  - https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
-releaseNotes: |
-  2026.01.15 - Added Vertcoin Support
-  2026.01.11 - Fixed Coin Config Mapping (Needed for BC2)
-  2025.12.12 - Increased default stratum port to be 25 to allow for multiple coins
-  2025.11.30 - Initial Release
-
+developer: Miningcore Community
+website: https://miningcore.org
+submitter: Aalnase
+submission: https://github.com/Aalnase/retromike-umbrel-app-store/pull/1
+repo: https://github.com/Aalnase/retromike-umbrel-app-store
+support: https://github.com/Aalnase/retromike-umbrel-app-store/issues
+gallery: []
+releaseNotes: >-
+  - Fix: reliable MFLEX pool auto-registration (fixed pool-manager + config seeding)
+  - Fix: Postgres init waits for dependency readiness
 dependencies:
   - retro-mike-postgres
 path: ""
-defaultUsername: ""
-defaultPassword: ""
