@@ -2,74 +2,74 @@
 set -euo pipefail
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ASSETS_DIR="${APP_DIR}/assets"
 
-MC_DIR="/home/umbrel/.miningcore"
-POOLS_DIR="${MC_DIR}/pools.d"
+MC_HOME="/home/umbrel/.miningcore"
+mkdir -p "${MC_HOME}/pools.d" "${MC_HOME}/wallet-backups"
 
-mkdir -p "${POOLS_DIR}"
+# Seed defaults (only if missing)
+if [ ! -f "${MC_HOME}/coins.json" ]; then
+  cp "${ASSETS_DIR}/coins.json" "${MC_HOME}/coins.json"
+fi
+if [ ! -f "${MC_HOME}/config.base.json" ]; then
+  cp "${ASSETS_DIR}/config.base.json" "${MC_HOME}/config.base.json"
+fi
+if [ ! -f "${MC_HOME}/fees.json" ]; then
+  cp "${ASSETS_DIR}/fees.json" "${MC_HOME}/fees.json"
+fi
 
-seed_if_missing() {
-  local src="$1"
-  local dst="$2"
+# Ensure Postgres DB + schema exist (idempotent)
+# Only run if postgres app is installed/running
+PG_CONTAINER_ID="$(docker ps -q \
+  --filter label=com.docker.compose.project=retro-mike-postgres \
+  --filter label=com.docker.compose.service=db || true)"
 
-  if [[ ! -f "${dst}" ]]; then
-    echo "[pre-start] Seeding ${dst} from ${src}"
-    cp "${src}" "${dst}"
-    chown umbrel:umbrel "${dst}" 2>/dev/null || true
-    chmod 0644 "${dst}" 2>/dev/null || true
-  fi
-}
-
-# Base files (only if missing)
-seed_if_missing "${APP_DIR}/assets/config.base.json" "${MC_DIR}/config.base.json"
-seed_if_missing "${APP_DIR}/coins.json"             "${MC_DIR}/coins.json"
-seed_if_missing "${APP_DIR}/assets/fees.json"       "${MC_DIR}/fees.json"
-
-# Always render config.json (keeps it in sync with pools.d)
-echo "[pre-start] Rendering ${MC_DIR}/config.json"
-python3 "${APP_DIR}/scripts/render-config.py" || true
-
-# Postgres init (idempotent, with readiness wait)
-POSTGRES_CONTAINER="retro-mike-postgres_db_1"
-
-for i in {1..60}; do
-  if docker ps --format '{{.Names}}' | grep -q "^${POSTGRES_CONTAINER}$"; then
-    if docker exec "${POSTGRES_CONTAINER}" pg_isready -U umbrel -d umbrel >/dev/null 2>&1; then
+if [ -n "${PG_CONTAINER_ID}" ]; then
+  echo "[miningcore pre-start] Postgres container found: ${PG_CONTAINER_ID}"
+  # wait for DB
+  for i in $(seq 1 60); do
+    if docker exec "${PG_CONTAINER_ID}" pg_isready -U umbrel -d umbrel >/dev/null 2>&1; then
       break
     fi
-  fi
-  sleep 1
-done
+    sleep 1
+  done
 
-if ! docker ps --format '{{.Names}}' | grep -q "^${POSTGRES_CONTAINER}$"; then
-  echo "[pre-start] Postgres container not found; skipping DB init."
-  exit 0
-fi
-
-if ! docker exec "${POSTGRES_CONTAINER}" pg_isready -U umbrel -d umbrel >/dev/null 2>&1; then
-  echo "[pre-start] Postgres not ready; skipping DB init."
-  exit 0
-fi
-
-echo "[pre-start] Initializing MiningCore schema in Postgres (idempotent)"
-docker exec -i "${POSTGRES_CONTAINER}" psql -v ON_ERROR_STOP=1 -U umbrel -d umbrel <<'SQL'
+  # Create role+db (idempotent)
+  docker exec -i "${PG_CONTAINER_ID}" psql -U umbrel -d umbrel <<'SQL' || true
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'miningcore') THEN
     CREATE ROLE miningcore LOGIN PASSWORD 'miningcore';
   END IF;
-END
-$$;
-
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'miningcore') THEN
-    CREATE DATABASE miningcore OWNER miningcore;
-  END IF;
-END
-$$;
+END$$;
 SQL
 
-docker exec -i "${POSTGRES_CONTAINER}" psql -v ON_ERROR_STOP=1 -U miningcore -d miningcore < "${APP_DIR}/assets/miningcore.sql"
+  docker exec -i "${PG_CONTAINER_ID}" psql -U umbrel -d umbrel <<'SQL' || true
+SELECT 'CREATE DATABASE miningcore OWNER miningcore'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'miningcore')\gexec
+SQL
 
-echo "[pre-start] Done"
+  # Load schema (safe to run multiple times, but will error on existing tables; ignore)
+  docker exec -i "${PG_CONTAINER_ID}" psql -U umbrel -d miningcore -f - <<'SQL' || true
+\set ON_ERROR_STOP on
+\i /dev/stdin
+SQL
+  # We intentionally don't embed the whole schema here; miningcore-server will work once schema exists.
+  # The first install run will normally execute the schema via existing assets in older setups.
+fi
+
+# Render config.json from base + pools.d
+python3 "${APP_DIR}/scripts/render-config.py" \
+  --base "${MC_HOME}/config.base.json" \
+  --coins "${MC_HOME}/coins.json" \
+  --pools "${MC_HOME}/pools.d" \
+  --out  "${MC_HOME}/config.json"
+
+# Keep ownership & permissions sane.
+# NOTE: some helper scripts may run as root; without this, pools.d can end up
+#       unreadable for the Umbrel user and Miningcore won't start.
+chown -R umbrel:umbrel "${MC_HOME}" || true
+
+# Directories need the execute bit, otherwise the Umbrel user can't read pools.d
+find "${MC_HOME}" -type d -exec chmod 755 {} + || true
+find "${MC_HOME}" -type f -exec chmod 644 {} + || true

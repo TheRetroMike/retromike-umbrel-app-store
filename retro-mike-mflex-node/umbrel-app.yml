@@ -1,32 +1,22 @@
-manifestVersion: 1
 id: retro-mike-mflex-node
-name: MultiFlex (MFLEX) Node
-tagline: Full node and wallet for MultiFlex Coin
-icon: https://mfcoin.net/assets/images/MultiFlexCoin.png
-category: Mining Nodes
-version: "1.0.17-umbrel3"
-port: 8570
-description: >-
-  Full node and wallet for MultiFlex Coin.
-
-  On install this app will:
-  - create/load a dedicated wallet ("pool") if needed
-  - generate a **legacy** pool address
-  - register the MFLEX pool in the "MiningCore (MFLEX)" app automatically
-
-  The node itself starts WITHOUT -wallet on first boot (so fresh installs never crash because a wallet is missing).
-  As soon as the wallet exists, it will auto-load it on restarts.
-
-developer: MultiFlex
-website: https://mfcoin.net
-submitter: Aalnase
-submission: https://github.com/Aalnase/retromike-umbrel-app-store/pull/3
+name: MultiFlex Node
+version: "1.0.18-umbrel1"
+tagline: MultiFlex Node for Umbrel with Miningcore integration
+description: >
+  MultiFlex full node for Umbrel.
+  Includes RPC + ZMQ defaults for Miningcore integration and automatic pool registration.
+developer: Aalnase
+website: https://github.com/Aalnase
 repo: https://github.com/Aalnase/retromike-umbrel-app-store
 support: https://github.com/Aalnase/retromike-umbrel-app-store/issues
-gallery: []
-releaseNotes: >-
-  - Fix: stable wallet creation/loading (legacy address enforced)
-  - Fix: MFLEX pool gets registered in MiningCore on first install reliably
+port: 8570
+path: ""
 dependencies:
   - retro-mike-miningcore
-path: ""
+category: Blockchain
+icon: https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-mflex-node/logo.png
+gallery:
+  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-mflex-node/1.png
+  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-mflex-node/2.png
+releaseNotes: >
+  Fixes wallet/pool registration robustness and permissions on /home/umbrel/.miningcore.

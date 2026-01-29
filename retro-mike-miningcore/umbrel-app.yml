@@ -1,36 +1,23 @@
-manifestVersion: 1.1.1
 id: retro-mike-miningcore
-name: MiningCore (MFLEX)
-tagline: Umbrel package of MiningCore with MFLEX support (Solo Mining)
-icon: https://raw.githubusercontent.com/ralexstokes/miningcore/master/doc/logo.svg
-category: SOLO Crypto Mining
+name: Miningcore
 version: "1.3.0-mflex7-umbrel1"
-port: 8033
-description: >-
-  This is the Miningcore pool from https://github.com/oliverw/miningcore.
-
-  It can be used for many sha256 coins based on Bitcoin Core; including MultiFlex Coin (MFLEX).
-
-  The app auto-initializes the required Postgres database + schema and renders
-  /home/umbrel/.miningcore/config.json from pool fragments in /home/umbrel/.miningcore/pools.d/.
-
-  Workflow on Umbrel:
-  1) Install Postgres
-  2) Install MiningCore
-  3) Install coin node apps (e.g., MFLEX Node) to auto-register pools
-  You can change or remove the fee at any time by editing:
-  /home/umbrel/.miningcore/fees.json
-
-developer: Miningcore Community
-website: https://miningcore.org
-submitter: Aalnase
-submission: https://github.com/Aalnase/retromike-umbrel-app-store/pull/1
+tagline: Miningcore Integration for Umbrel
+description: >
+  Miningcore is a high-performance mining pool server software for various
+  cryptocurrencies.
+developer: Miningcore Contributors
+website: https://github.com/Miningcore
 repo: https://github.com/Aalnase/retromike-umbrel-app-store
 support: https://github.com/Aalnase/retromike-umbrel-app-store/issues
-gallery: []
-releaseNotes: >-
-  - Fix: reliable MFLEX pool auto-registration (fixed pool-manager + config seeding)
-  - Fix: Postgres init waits for dependency readiness
+port: 8560
+path: ""
 dependencies:
   - retro-mike-postgres
-path: ""
+category: Developer Tools
+icon: https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-miningcore/logo.png
+gallery:
+  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-miningcore/1.png
+  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-miningcore/2.png
+  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-miningcore/3.png
+releaseNotes: >
+  Initial release with improved database setup and configuration management.

@@ -1,76 +1,32 @@
-version: "3.7"
+version: '3.7'
 
 services:
   app_proxy:
-    # wait until web is up
-    depends_on:
-      - web
     environment:
-      APP_HOST: ${APP_ID}_web_1
+      APP_HOST: retro-mike-postgres_web_1
       APP_PORT: 80
-      PROXY_AUTH_ADD: "false"
+
+  web:
+    image: dpage/pgadmin4:latest
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      PGADMIN_DEFAULT_EMAIL: umbrel@umbrel.com
+      PGADMIN_DEFAULT_PASSWORD: umbrel
+    volumes:
+      - ${APP_DATA_DIR}/pgadmin:/var/lib/pgadmin
 
   db:
     image: postgres:16
-    ports:
-      - "5432:5432"
     restart: on-failure
+    stop_grace_period: 1m
     environment:
       POSTGRES_DB: umbrel
       POSTGRES_USER: umbrel
       POSTGRES_PASSWORD: P@ssw0rd
-      TZ: America/Chicago
     volumes:
       - ${APP_DATA_DIR}/pgadmin:/var/lib/pgadmin
       - ${APP_DATA_DIR}/pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U umbrel -d umbrel"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # one-shot init container to fix ownership/perms on the bind mount
-  init_pgadmin_perms:
-    image: busybox:1.36
-    restart: "no"
-    command: >
-      sh -lc "
-        mkdir -p /var/lib/pgadmin/sessions /var/lib/pgadmin/storage &&
-        chown -R 5050:5050 /var/lib/pgadmin &&
-        chmod -R 750 /var/lib/pgadmin
-      "
-    volumes:
-      - ${APP_DATA_DIR}/pgadmin:/var/lib/pgadmin
-
-  web: # pgAdmin
-    image: dpage/pgadmin4:latest
-    restart: on-failure
-    depends_on:
-      db:
-        condition: service_healthy
-      init_pgadmin_perms:
-        condition: service_completed_successfully
-    environment:
-      # explicit creds (don’t rely on Umbrel vars here)
-      PGADMIN_DEFAULT_EMAIL: admin@umbrel.local
-      PGADMIN_DEFAULT_PASSWORD: P@ssw0rd
-      PGADMIN_LISTEN_PORT: "80"
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
-
-      PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS: '["local","umbrel.local"]'
-      PGADMIN_CONFIG_GLOBALLY_DELIVERABLE: "False"
-      PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY: "False"
-
-      # proxy fixes (trust one hop)
-      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
-      PGADMIN_CONFIG_PROXY_X_FOR_COUNT: "1"
-      PGADMIN_CONFIG_PROXY_X_PROTO_COUNT: "1"
-      PGADMIN_CONFIG_PROXY_X_HOST_COUNT: "1"
-      PGADMIN_CONFIG_PROXY_X_PORT_COUNT: "1"
-      PGADMIN_CONFIG_PROXY_X_PREFIX_COUNT: "0"
-
-      TZ: America/Chicago
-    volumes:
-      - ${APP_DATA_DIR}/pgadmin:/var/lib/pgadmin
-      - ${APP_DATA_DIR}/servers.json:/pgadmin4/servers.json:ro
-
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    ports:
+      - 5432:5432

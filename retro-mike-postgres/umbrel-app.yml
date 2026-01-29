@@ -1,31 +1,20 @@
-manifestVersion: 1.1
-
 id: retro-mike-postgres
-name: PostgreSQL + pgAdmin
-tagline: PostgreSQL with a browser-based admin UI
-category: Databases
-version: "1.0.10"
+name: PostgreSQL
+version: "1.0.11"
+tagline: PostgreSQL for Umbrel
+description: >
+  PostgreSQL database for Umbrel. Includes PgAdmin.
+developer: Trilogic
+website: https://www.postgresql.org
+repo: https://github.com/Aalnase/retromike-umbrel-app-store
+support: https://github.com/Aalnase/retromike-umbrel-app-store/issues
 port: 5050
-icon: https://raw.githubusercontent.com/TriLogic/umbrel-store/refs/heads/main/umbrel-store-postgre-pgadmin/icon.svg
-description: >-
-  A bundled PostgreSQL database and pgAdmin 4 web UI. Persistent volumes,
-  proxy-safe settings for Umbrel, and a pre-registered local server.
-
-developer: Retro Mike
-website: https://www.postgresql.org/
-submitter: Retro Mike
-submission: https://github.com/trilogic/umbrel-store/pulls
-repo: https://github.com/TheRetroMike/retromike-umbrel-app-store
-support: https://github.com/TheRetroMike/retromike-umbrel-app-store
-
-gallery:
-  - https://raw.githubusercontent.com/TriLogic/umbrel-store/refs/heads/main/umbrel-store-postgre-pgadmin/icon.svg
-
-releaseNotes: >-
-  Initial release of PostgreSQL + pgAdmin as a single Umbrel app.
-
+path: "/"
 dependencies: []
-path: ""
-defaultUsername: admin@umbrel.local
-defaultPassword: P@ssw0rd
-
+category: Developer Tools
+icon: https://raw.githubusercontent.com/Trilogic/umbrel-store/refs/heads/main/postgresql/icon.svg
+gallery:
+  - https://raw.githubusercontent.com/Trilogic/umbrel-store/refs/heads/main/postgresql/screen1.png
+  - https://raw.githubusercontent.com/Trilogic/umbrel-store/refs/heads/main/postgresql/screen2.png
+releaseNotes: >
+  Adds initdb script to create miningcore role+database on first startup.

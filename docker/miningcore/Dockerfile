@@ -32,7 +32,7 @@ NUGET
 WORKDIR /src
 
 # Base Miningcore (dev)
-RUN git clone --branch dev https://github.com/xiaolin1579/miningcore.git miningcore
+RUN git clone https://github.com/blackmennewstyle/miningcore.git miningcore
 WORKDIR /src/miningcore
 RUN git fetch --tags --force || true
 
