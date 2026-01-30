@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Postgres post-install hook (Umbrel)
+# - Ensures role+database for MiningCore exist (best-effort, idempotent)
+#
+# NOTE: We intentionally do NOT use `set -euo pipefail` here.
+
+log() { echo "[postgres post-install] $*"; }
+warn() { echo "[postgres post-install] WARN: $*" >&2; }
+
+POSTGRES_CONTAINER="$(docker ps --filter label=com.docker.compose.project=retro-mike-postgres --format '{{.Names}}' 2>/dev/null | grep '_db_' | head -n1)"
+if [ -z "$POSTGRES_CONTAINER" ]; then
+  warn "Postgres container not found (retro-mike-postgres). Skipping."
+  exit 0
+fi
+
+# wait until postgres is ready (up to 60s)
+for i in $(seq 1 60); do
+  docker exec "$POSTGRES_CONTAINER" pg_isready -U umbrel -d umbrel >/dev/null 2>&1 && break
+  sleep 1
+done
+
+# role miningcore
+docker exec "$POSTGRES_CONTAINER" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -tc   "SELECT 1 FROM pg_roles WHERE rolname='miningcore';" 2>/dev/null | grep -q 1   || docker exec "$POSTGRES_CONTAINER" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -c   "CREATE ROLE miningcore LOGIN PASSWORD 'miningcore';" >/dev/null 2>&1 || true
+
+# db miningcore
+docker exec "$POSTGRES_CONTAINER" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -tc   "SELECT 1 FROM pg_database WHERE datname='miningcore';" 2>/dev/null | grep -q 1   || docker exec "$POSTGRES_CONTAINER" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -c   "CREATE DATABASE miningcore OWNER miningcore;" >/dev/null 2>&1 || true
+
+log "OK (role+db ensured)"
+exit 0

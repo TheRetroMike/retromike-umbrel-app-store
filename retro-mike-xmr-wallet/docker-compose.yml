@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      APP_HOST: retro-mike-xmr-wallet_web_1
+      APP_PORT: 8080
+  web:
+    image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: on-failure
+    depends_on:
+      - wallet
+  wallet:
+    image: theretromike/nodes:monero
+    restart: on-failure
+    stop_grace_period: 1m
+    volumes:
+      - ${APP_DATA_DIR}/.monero:/root/.bitmonero
+    ports:
+      - 18082:18082  # WALLET_RPC
+    entrypoint: "monero-wallet-rpc --wallet-file /root/.bitmonero/default --password poolpassword --daemon-address retro-mike-xmr-node_node_1:9009 --daemon-login pooluser:poolpassword --rpc-bind-port 18082 --rpc-bind-ip 0.0.0.0 --confirm-external-bind --disable-rpc-login --log-level 1"

@@ -1,0 +1,31 @@
+manifestVersion: 1.1
+id: retro-mike-bsv-node
+name: Bitcoin SV (BSV) Node
+tagline: Bitcoin SV Node. This is a general node app for Bitcoin SV and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Bitcoin SV network.
+icon: https://cryptologos.cc/logos/bitcoin-sv-bsv-logo.png
+category: Mining Nodes
+version: "1.0.4-umbrel1"
+port: 5010
+description: |
+  Bitcoin SV Node. This is a general node app for Bitcoin SV and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Bitcoin SV network.
+
+  If you find this app useful, please consider donating
+
+  BSV - 1EFKjK1wYKGcc7c3Hs87jcsR1rkRx2KVPZ
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://github.com/TheRetroMike/bitcoin-sv
+repo: https://github.com/TheRetroMike/bitcoin-sv
+support: https://github.com/TheRetroMike/bitcoin-sv
+gallery:
+  - https://cryptologos.cc/logos/bitcoin-sv-bsv-logo.png
+releaseNotes: |
+  2025.12.29 - Excessive Block Size Tweak
+  2025.12.27 - Initial Release
+dependencies:
+  - retro-mike-miningcore
+path: ""
+defaultUsername: ""
+defaultPassword: ""

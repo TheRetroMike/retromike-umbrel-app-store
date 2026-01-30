@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [ ! -x "/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" ]; then
+  exit 0
+fi
+
+"/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" register-bitcoin   --pool-id "dgb"   --coin "digibyte-sha256"   --app-id "retro-mike-dgb-node-sha256"   --rpc-port "9001"   --zmq-port "7001"   --stratum-port "6001"   --daemon-host "retro-mike-dgb-node-sha256_digibyted_1"

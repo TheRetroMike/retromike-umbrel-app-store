@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [ ! -x "/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" ]; then
+  exit 0
+fi
+
+"/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" unregister --pool-id "vtc"

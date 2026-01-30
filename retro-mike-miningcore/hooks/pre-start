@@ -1,139 +1,98 @@
 #!/usr/bin/env bash
-
-# NOTE: Do NOT use `set -euo pipefail` here.
-# Umbrel runs hooks non-interactively, but we still want this hook to be resilient.
+# MiningCore pre-start hook (Umbrel)
+# - Seeds ~/.miningcore with base files if missing
+# - Ensures config.json exists (so Docker file mounts don't turn into directories)
+# - Ensures Postgres role/db exist and schema is applied (best-effort)
+#
+# NOTE: We intentionally do NOT use `set -euo pipefail` here.
 
 APP_DATA_DIR="${APP_DATA_DIR:-/home/umbrel/umbrel/app-data/retro-mike-miningcore}"
 MC_DIR="/home/umbrel/.miningcore"
 
+log() { echo "[miningcore pre-start] $*"; }
+warn() { echo "[miningcore pre-start] WARN: $*" >&2; }
+
 seed_if_missing() {
   local src="$1"
   local dst="$2"
-
-  # Only seed if destination missing AND source exists
   if [ ! -f "$dst" ] && [ -f "$src" ]; then
-    cp -a "$src" "$dst"
+    cp -a "$src" "$dst" 2>/dev/null || true
   fi
 }
 
-fix_mc_permissions() {
-  [ -d "$MC_DIR" ] || return 0
+log "Seed base files into $MC_DIR (if missing)"
+mkdir -p "$MC_DIR/pools.d" "$MC_DIR/wallet-backups" 2>/dev/null || true
 
-  chown -R 1000:1000 "$MC_DIR" 2>/dev/null || true
-  find "$MC_DIR" -type d -exec chmod 755 {} + 2>/dev/null || true
-  find "$MC_DIR" -type f -exec chmod 644 {} + 2>/dev/null || true
-}
-
-mkdir -p "$MC_DIR/pools.d" "$MC_DIR/wallet-backups"
-
-echo "== MiningCore pre-start: seed base files if missing =="
-seed_if_missing "$APP_DATA_DIR/assets/config.base.json" "$MC_DIR/config.base.json"
-seed_if_missing "$APP_DATA_DIR/assets/fees.json"        "$MC_DIR/fees.json"
-
-# coins.json may live either in assets/ or app root depending on store layout
-seed_if_missing "$APP_DATA_DIR/assets/coins.json" "$MC_DIR/coins.json"
 seed_if_missing "$APP_DATA_DIR/coins.json"       "$MC_DIR/coins.json"
+seed_if_missing "$APP_DATA_DIR/fees.json"        "$MC_DIR/fees.json"
+seed_if_missing "$APP_DATA_DIR/assets/config.base.json" "$MC_DIR/config.base.json"
 
-# If config.json accidentally became a directory, remove it
-if [ -d "$MC_DIR/config.json" ]; then
-  rm -rf "$MC_DIR/config.json"
+# Ensure config.json exists (otherwise docker will create a directory at that path)
+if [ ! -f "$MC_DIR/config.json" ]; then
+  if [ -f "$APP_DATA_DIR/scripts/render-config.py" ]; then
+    python3 "$APP_DATA_DIR/scripts/render-config.py" >/dev/null 2>&1 || true
+  fi
 fi
 
-# Ensure DB creds are consistent (miningcore/miningcore)
-python3 - <<'PY'
+# Patch DB creds in config(s) to miningcore/miningcore (idempotent)
+python3 - <<'PY' 2>/dev/null
 import json
 from pathlib import Path
 
-TARGET = {
-    "host": "retro-mike-postgres_db_1",
-    "port": 5432,
-    "user": "miningcore",
-    "password": "miningcore",
-    "database": "miningcore",
-}
-
-def patch_postgres(d: dict) -> bool:
-    changed = False
-
-    # Newer/this repo layout: persistence.postgres
-    if isinstance(d.get("persistence"), dict):
-        pers = d["persistence"]
-        if isinstance(pers.get("postgres"), dict):
-            pg = pers["postgres"]
-            for k, v in TARGET.items():
-                if pg.get(k) != v:
-                    pg[k] = v
-                    changed = True
-
-    # Older layout some forks used: cluster.persistence
-    if isinstance(d.get("cluster"), dict) and isinstance(d["cluster"].get("persistence"), dict):
-        pers = d["cluster"]["persistence"]
-        for k in ("user", "password", "database"):
-            if pers.get(k) != TARGET[k]:
-                pers[k] = TARGET[k]
-                changed = True
-
-    return changed
-
-for path in (Path("/home/umbrel/.miningcore/config.base.json"), Path("/home/umbrel/.miningcore/config.json")):
-    if not path.exists() or not path.is_file():
-        continue
+def patch(path: Path):
+    if not path.exists():
+        return
     try:
-        d = json.loads(path.read_text())
+        d=json.loads(path.read_text())
     except Exception:
-        continue
-
-    if patch_postgres(d):
+        return
+    pers=d.get("persistence")
+    if not isinstance(pers, dict):
+        return
+    changed=False
+    if pers.get("user") != "miningcore":
+        pers["user"]="miningcore"; changed=True
+    if pers.get("password") != "miningcore":
+        pers["password"]="miningcore"; changed=True
+    if pers.get("database") != "miningcore":
+        pers["database"]="miningcore"; changed=True
+    if changed:
         path.write_text(json.dumps(d, indent=2) + "\n")
-        print("patched", path)
+
+patch(Path("/home/umbrel/.miningcore/config.base.json"))
+patch(Path("/home/umbrel/.miningcore/config.json"))
 PY
 
-# Remove a couple of stale fragments we never want auto-enabled
-rm -f "$MC_DIR/pools.d/bch.json" "$MC_DIR/pools.d/bch.json.disabled" 2>/dev/null || true
+# Fix ownership/perms (MiningCore container runs as 1000:1000)
+chown -R 1000:1000 "$MC_DIR" 2>/dev/null || true
+find "$MC_DIR" -type d -exec chmod 755 {} + 2>/dev/null || true
+find "$MC_DIR" -type f -exec chmod 644 {} + 2>/dev/null || true
 
-# If config.json is missing, generate from config.base.json + pools.d fragments
-if [ ! -f "$MC_DIR/config.json" ]; then
-  python3 "$APP_DATA_DIR/scripts/render-config.py" >/dev/null 2>&1 || true
-fi
+# Clean stale fragments (optional)
+rm -f "$MC_DIR/pools.d/bch.json.disabled" 2>/dev/null || true
 
-fix_mc_permissions
-
-echo "== MiningCore pre-start: ensure postgres role/db/schema =="
-PG_CONTAINER_ID="$(docker ps --filter name=retro-mike-postgres_db_1 --format '{{.ID}}' | head -n1)"
-if [ -z "$PG_CONTAINER_ID" ]; then
-  echo "ERROR: postgres container retro-mike-postgres_db_1 not found"
+# Postgres: ensure role+db exist and schema is applied (best-effort)
+POSTGRES_CONTAINER="$(docker ps --filter label=com.docker.compose.project=retro-mike-postgres --format '{{.Names}}' 2>/dev/null | grep '_db_' | head -n1)"
+if [ -z "$POSTGRES_CONTAINER" ]; then
+  warn "Postgres container for retro-mike-postgres not found. Skipping DB init."
   exit 0
 fi
 
-# Wait briefly for postgres to accept connections
+# wait until postgres is ready (up to 60s)
 for i in $(seq 1 60); do
-  if docker exec "$PG_CONTAINER_ID" pg_isready -U umbrel -d umbrel >/dev/null 2>&1; then
-    break
-  fi
+  docker exec "$POSTGRES_CONTAINER" pg_isready -U umbrel -d umbrel >/dev/null 2>&1 && break
   sleep 1
-  if [ "$i" -eq 60 ]; then
-    echo "ERROR: postgres not ready (pg_isready failed)"
-    exit 0
-  fi
 done
 
 # role miningcore
-if ! docker exec "$PG_CONTAINER_ID" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -tc \
-  "SELECT 1 FROM pg_roles WHERE rolname='miningcore';" | grep -q 1; then
-  docker exec "$PG_CONTAINER_ID" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -c \
-    "CREATE ROLE miningcore LOGIN PASSWORD 'miningcore';"
-fi
+docker exec "$POSTGRES_CONTAINER" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -tc   "SELECT 1 FROM pg_roles WHERE rolname='miningcore';" 2>/dev/null | grep -q 1   || docker exec "$POSTGRES_CONTAINER" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -c   "CREATE ROLE miningcore LOGIN PASSWORD 'miningcore';" >/dev/null 2>&1 || true
 
 # db miningcore
-if ! docker exec "$PG_CONTAINER_ID" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -tc \
-  "SELECT 1 FROM pg_database WHERE datname='miningcore';" | grep -q 1; then
-  docker exec "$PG_CONTAINER_ID" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -c \
-    "CREATE DATABASE miningcore OWNER miningcore;"
-fi
+docker exec "$POSTGRES_CONTAINER" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -tc   "SELECT 1 FROM pg_database WHERE datname='miningcore';" 2>/dev/null | grep -q 1   || docker exec "$POSTGRES_CONTAINER" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -c   "CREATE DATABASE miningcore OWNER miningcore;" >/dev/null 2>&1 || true
 
-# schema (idempotent - miningcore-schema.sql uses IF NOT EXISTS)
+# schema (idempotent)
 if [ -f "$APP_DATA_DIR/assets/miningcore-schema.sql" ]; then
-  cat "$APP_DATA_DIR/assets/miningcore-schema.sql" | docker exec -i "$PG_CONTAINER_ID" psql -U umbrel -d miningcore >/dev/null 2>&1 || true
+  cat "$APP_DATA_DIR/assets/miningcore-schema.sql" | docker exec -i "$POSTGRES_CONTAINER"     psql -U umbrel -d miningcore >/dev/null 2>&1 || true
 fi
 
-fix_mc_permissions
+exit 0

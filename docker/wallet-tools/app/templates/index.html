@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Wallet Tools</title>
+  <style>
+    body { font-family: sans-serif; margin: 18px; }
+    .box { border: 1px solid #ddd; padding: 12px; margin-bottom: 16px; border-radius: 8px; }
+    .ok { color: #0a7; }
+    .err { color: #c33; }
+    code, pre { background: #f6f6f6; padding: 8px; border-radius: 6px; display: block; overflow-x: auto; }
+  </style>
+</head>
+<body>
+<h2>Wallet Tools</h2>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="box">
+      {% for cat, msg in messages %}
+        <div class="{{cat}}">{{msg}}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="box">
+  <h3>Backup wallet</h3>
+  <form method="post" action="/init-wallet">
+    <label>Pool:</label>
+    <select name="pool_id">
+      {% for p in pools %}
+        <option value="{{p.pool_id}}" {% if p.pool_id==selected %}selected{% endif %}>{{p.pool_id}} ({{p.coin}}) - {{p.rpc_host}}:{{p.rpc_port}}</option>
+      {% endfor %}
+    </select>
+    <label>Wallet:</label>
+    <input name="wallet" value="{{wallet}}" />
+    <button type="submit">Init wallet (create/load)</button>
+  </form>
+
+  <form method="post" action="/backup" style="margin-top:10px;">
+    <label>Pool:</label>
+    <select name="pool_id">
+      {% for p in pools %}
+        <option value="{{p.pool_id}}" {% if p.pool_id==selected %}selected{% endif %}>{{p.pool_id}} ({{p.coin}})</option>
+      {% endfor %}
+    </select>
+    <label>Wallet:</label>
+    <input name="wallet" value="{{wallet}}" />
+    <button type="submit">Backup now</button>
+    <div style="margin-top:8px; font-size: 13px;">
+      Backup files are stored under: <code>/home/umbrel/.miningcore/wallet-backups/&lt;pool_id&gt;/</code>
+    </div>
+  </form>
+</div>
+
+<div class="box">
+  <h3>Upload wallet (restore helper)</h3>
+  <form method="post" action="/upload" enctype="multipart/form-data">
+    <label>Pool:</label>
+    <select name="pool_id">
+      {% for p in pools %}
+        <option value="{{p.pool_id}}" {% if p.pool_id==selected %}selected{% endif %}>{{p.pool_id}} ({{p.coin}})</option>
+      {% endfor %}
+    </select>
+    <label>Wallet:</label>
+    <input name="wallet" value="{{wallet}}" />
+    <input type="file" name="file" />
+    <button type="submit">Upload</button>
+  </form>
+</div>
+
+<div class="box">
+  <h3>Existing backups</h3>
+  {% for pool_id, files in backups.items() %}
+    <b>{{pool_id}}</b>
+    {% if files %}
+      <ul>
+      {% for f in files %}
+        <li><a href="/download/{{pool_id}}/{{f}}">{{f}}</a></li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <div style="font-size: 13px;">(none)</div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+</body>
+</html>
