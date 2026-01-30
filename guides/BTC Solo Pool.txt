@@ -1,0 +1,304 @@
+Add Retro Mike Community App Store to Umbrel: https://github.com/TheRetroMike/retromike-umbrel-app-store
+Install Postgres App from the Retro Mike Community App Store
+Install BTC Node App from the Retro Mike Community App Store
+
+Open Postgres App and Login
+Username: admin@umbrel.local
+Password: P@ssw0rd
+
+Expand Servers and Local Postgres [enter P@ssw0rd if prompted for password]
+Right click login and then create login/role. Give it a name of miningcore and password of miningcore on the definition tab. On the Privileges tab, toggle on Can Login. Click save to create it.
+Right click Databases and then create Database. Name is miningcore and set the owner to miningcore. Click save to create it.
+Expand databases, right click miningcore, Click Create Script, replace the contents with these and click the execute button
+-------------------
+SET ROLE miningcore;
+CREATE TABLE shares
+(
+poolid TEXT NOT NULL,
+blockheight BIGINT NOT NULL,
+difficulty DOUBLE PRECISION NOT NULL,
+networkdifficulty DOUBLE PRECISION NOT NULL,
+miner TEXT NOT NULL,
+worker TEXT NULL,
+useragent TEXT NULL,
+ipaddress TEXT NOT NULL,
+source TEXT NULL,
+created TIMESTAMPTZ NOT NULL
+);
+
+
+CREATE INDEX IDX_SHARES_POOL_MINER on shares(poolid, miner);
+CREATE INDEX IDX_SHARES_POOL_CREATED ON shares(poolid, created);
+CREATE INDEX IDX_SHARES_POOL_MINER_DIFFICULTY on shares(poolid, miner, difficulty);
+
+
+CREATE TABLE blocks
+(
+id BIGSERIAL NOT NULL PRIMARY KEY,
+poolid TEXT NOT NULL,
+blockheight BIGINT NOT NULL,
+networkdifficulty DOUBLE PRECISION NOT NULL,
+status TEXT NOT NULL,
+type TEXT NULL,
+confirmationprogress FLOAT NOT NULL DEFAULT 0,
+effort FLOAT NULL,
+minereffort FLOAT NULL,
+transactionconfirmationdata TEXT NOT NULL,
+miner TEXT NULL,
+reward decimal(28,12) NULL,
+source TEXT NULL,
+hash TEXT NULL,
+created TIMESTAMPTZ NOT NULL
+);
+
+
+CREATE INDEX IDX_BLOCKS_POOL_BLOCK_STATUS on blocks(poolid, blockheight, status);
+CREATE INDEX IDX_BLOCKS_POOL_BLOCK_TYPE on blocks(poolid, blockheight, type);
+
+
+CREATE TABLE balances
+(
+poolid TEXT NOT NULL,
+address TEXT NOT NULL,
+amount decimal(28,12) NOT NULL DEFAULT 0,
+created TIMESTAMPTZ NOT NULL,
+updated TIMESTAMPTZ NOT NULL,
+
+
+primary key(poolid, address)
+
+);
+
+
+CREATE TABLE balance_changes
+(
+id BIGSERIAL NOT NULL PRIMARY KEY,
+poolid TEXT NOT NULL,
+address TEXT NOT NULL,
+amount decimal(28,12) NOT NULL DEFAULT 0,
+usage TEXT NULL,
+tags text[] NULL,
+created TIMESTAMPTZ NOT NULL
+);
+
+
+CREATE INDEX IDX_BALANCE_CHANGES_POOL_ADDRESS_CREATED on balance_changes(poolid, address, created desc);
+CREATE INDEX IDX_BALANCE_CHANGES_POOL_TAGS on balance_changes USING gin (tags);
+
+
+CREATE TABLE miner_settings
+(
+poolid TEXT NOT NULL,
+address TEXT NOT NULL,
+paymentthreshold decimal(28,12) NOT NULL,
+created TIMESTAMPTZ NOT NULL,
+updated TIMESTAMPTZ NOT NULL,
+
+
+primary key(poolid, address)
+
+);
+
+
+CREATE TABLE payments
+(
+id BIGSERIAL NOT NULL PRIMARY KEY,
+poolid TEXT NOT NULL,
+coin TEXT NOT NULL,
+address TEXT NOT NULL,
+amount decimal(28,12) NOT NULL,
+transactionconfirmationdata TEXT NOT NULL,
+created TIMESTAMPTZ NOT NULL
+);
+
+
+CREATE INDEX IDX_PAYMENTS_POOL_COIN_WALLET on payments(poolid, coin, address);
+
+
+CREATE TABLE poolstats
+(
+id BIGSERIAL NOT NULL PRIMARY KEY,
+poolid TEXT NOT NULL,
+connectedminers INT NOT NULL DEFAULT 0,
+poolhashrate DOUBLE PRECISION NOT NULL DEFAULT 0,
+sharespersecond DOUBLE PRECISION NOT NULL DEFAULT 0,
+networkhashrate DOUBLE PRECISION NOT NULL DEFAULT 0,
+networkdifficulty DOUBLE PRECISION NOT NULL DEFAULT 0,
+lastnetworkblocktime TIMESTAMPTZ NULL,
+blockheight BIGINT NOT NULL DEFAULT 0,
+connectedpeers INT NOT NULL DEFAULT 0,
+created TIMESTAMPTZ NOT NULL
+);
+
+
+CREATE INDEX IDX_POOLSTATS_POOL_CREATED on poolstats(poolid, created);
+
+
+CREATE TABLE minerstats
+(
+id BIGSERIAL NOT NULL PRIMARY KEY,
+poolid TEXT NOT NULL,
+miner TEXT NOT NULL,
+worker TEXT NOT NULL,
+hashrate DOUBLE PRECISION NOT NULL DEFAULT 0,
+sharespersecond DOUBLE PRECISION NOT NULL DEFAULT 0,
+created TIMESTAMPTZ NOT NULL
+);
+
+
+CREATE INDEX IDX_MINERSTATS_POOL_CREATED on minerstats(poolid, created);
+CREATE INDEX IDX_MINERSTATS_POOL_MINER_CREATED on minerstats(poolid, miner, created);
+CREATE INDEX IDX_MINERSTATS_POOL_MINER_WORKER_CREATED_HASHRATE on minerstats(poolid,miner,worker,created desc,hashrate);
+-------------------
+
+
+SSH into Umbrel Server
+Username: umbrel
+Password: [password you set up in umbrel web ui]
+
+Get node pool address by running this command. Copy the address and then replace xxx in the btc pool config file you will generate in a few steps with the address:
+
+sudo docker exec retro-mike-btc-node_node_1 bitcoin-cli -rpcport=9004 -rpcuser=pooluser -rpcpassword=poolpassword createwallet default
+
+sudo docker exec retro-mike-btc-node_node_1 bitcoin-cli -rpcport=9004 -rpcuser=pooluser -rpcpassword=poolpassword getnewaddress "" "legacy"
+
+mkdir .miningcore
+cd .miningcore
+wget https://raw.githubusercontent.com/xiaolin1579/miningcore/refs/heads/dev/src/Miningcore/coins.json -O coins.json
+nano config.json
+
+-------------------
+Sample BTC Config:
+{
+  "logging": {
+    "level": "info",
+    "enableConsoleLog": true,
+    "enableConsoleColors": true,
+    "logFile": "",
+    "apiLogFile": "",
+    "logBaseDirectory": "",
+    "perPoolLogFile": true
+  },
+  "banning": {
+    "manager": "Integrated",
+    "banOnJunkReceive": true,
+    "banOnInvalidShares": false
+  },
+  "notifications": {
+    "enabled": false,
+    "email": {
+      "host": "smtp.example.com",
+      "port": 587,
+      "user": "user",
+      "password": "password",
+      "fromAddress": "info@yourpool.org",
+      "fromName": "support"
+    },
+    "admin": {
+      "enabled": false,
+      "emailAddress": "user@example.com",
+      "notifyBlockFound": true
+    }
+  },
+  "persistence": {
+    "postgres": {
+      "host": "retro-mike-postgres_db_1",
+      "port": 5432,
+      "user": "miningcore",
+      "password": "miningcore",
+      "database": "miningcore"
+    }
+  },
+  "paymentProcessing": {
+    "enabled": true,
+    "interval": 600,
+    "shareRecoveryFile": "recovered-shares.txt",
+    "coinbaseString": "Mined with RMT Node on Umbrel"
+  },
+  "api": {
+    "enabled": true,
+    "listenAddress": "*",
+    "port": 4000,
+    "metricsIpWhitelist": [],
+    "rateLimiting": {
+      "disabled": true,
+      "rules": [
+        {
+          "Endpoint": "*",
+          "Period": "1s",
+          "Limit": 5
+        }
+      ],
+      "ipWhitelist": [
+        ""
+      ]
+    }
+  },
+  "pools": [
+ {
+  "id": "btc",
+  "enabled": true,
+  "coin": "bitcoin",
+  "address": "xxx",
+  "rewardRecipients": [
+    {
+      "address": "xxx",
+      "percentage": 0.05
+    },
+    {
+      "address": "31q6x9Vp9J2BJ8rTnW4F8aP744CEAScFN5",
+      "percentage": 0.05
+    },
+  ],
+  "enableAsicBoost": true,
+  "blockRefreshInterval": 0,
+  "jobRebroadcastTimeout": 10,
+  "clientConnectionTimeout": 600,
+  "banning": {
+    "enabled": true,
+    "time": 600,
+    "invalidPercent": 50,
+    "checkThreshold": 50
+  },
+  "ports": {
+    "6004": {
+      "name": "General ASIC",
+      "listenAddress": "0.0.0.0",
+      "difficulty": 1024,
+      "varDiff": {
+        "minDiff": 1,
+        "targetTime": 15,
+        "retargetTime": 90,
+        "variancePercent": 30
+      }
+    },
+  },
+  "daemons": [
+    {
+      "host": "retro-mike-btc-node_node_1",
+      "port": 9004,
+      "user": "pooluser",
+      "password": "poolpassword",
+      "zmqBlockNotifySocket": "tcp://retro-mike-btc-node_node_1:7004"
+    }
+  ],
+  "paymentProcessing": {
+    "enabled": true,
+    "minimumPayment": 0.001,
+    "payoutScheme": "SOLO",
+    "payoutSchemeConfig": {
+      "factor": 2
+    }
+  }
+ }
+]
+}
+------------------
+ctrl+x then y then enter to save and exit
+
+Go back to the umbrel web dashboard
+Install Miningcore App from the Retro Mike Community App Store
+Install Miningcore Web UI App from the Retro Mike Community App Store
+
+Open Miningcore Web UI App to monitor miner stats
+Connect miner to stratum+tcp://[ip_of_umbrel_server]:6004

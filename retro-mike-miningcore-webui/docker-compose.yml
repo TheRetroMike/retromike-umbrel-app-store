@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      APP_HOST: retro-mike-miningcore-webui_web_1
+      APP_PORT: 8080
+  web:
+    image: theretromike/miningcorewebui
+#    ports:
+#      - 5002:8080
+    restart: on-failure
+    volumes:
+      - /home/umbrel/.miningcore:/app/miningcore
+    user: "1000:1000"
+    environment:
+      - POOL_NAME=Self-Hosted Mining Pool
+      - STRATUM_HOST=umbrel.local
+      - API_BASE_URL=http://retro-mike-miningcore_server_1:4000/api
+      - PLATFORM=UMBREL 

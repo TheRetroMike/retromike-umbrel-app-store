@@ -1,0 +1,35 @@
+manifestVersion: 1
+id: retro-mike-miningcore-legacy
+name: MiningCore (Legacy)
+tagline: MiningCore Mining Pool App - Legacy Version
+icon: https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
+category: SOLO Crypto Mining
+version: "1.0.0"
+port: 8561
+description: |
+  MiningCore Mining Pool App. Legacy Version. Retained for Monero Support. For a full functioning app, you will also need to install one or more nodes and configure the Pool Config JSON file manually by SSHing into your Umbrel server.
+
+  If you find this app useful, please consider donating
+
+  BTC - 31q6x9Vp9J2BJ8rTnW4F8aP744CEAScFN5
+  LTC - MAhooUHqeTdhJoMEjbgTwFSqhZmbzyko83
+  DOGE - DSQLL3m5B1BwZa7jaNnoYaXHVeT9cAHUvd
+  BCH - bitcoincash:qzczcn98zusq77fk6jq744xu0u8jlrd6su930qk7x7
+  DGB - DGjhBN3ckfAjijfcptH66TNCTHpzBdxtMc
+  BSV - 1EFKjK1wYKGcc7c3Hs87jcsR1rkRx2KVPZ
+  BC2 - bc1qwgeeflavv596u0s7np3yll5acllvwq5wx2ealf
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://hub.docker.com/r/theretromike/miningcore
+repo: https://hub.docker.com/r/theretromike/miningcore
+support: https://hub.docker.com/r/theretromike/miningcore
+gallery:
+  - https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
+releaseNotes: |
+  2025.01.18 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

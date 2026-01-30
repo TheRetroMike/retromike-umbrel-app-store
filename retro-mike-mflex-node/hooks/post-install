@@ -1,16 +1,40 @@
 #!/usr/bin/env bash
+# MFLEX node post-install hook (Umbrel)
+# - Best-effort: create/load wallet + register MFLEX pool in MiningCore
+#
+# NOTE: We intentionally do NOT use `set -euo pipefail` here.
 
-echo "== Auto-register MFLEX pool for MiningCore =="
+PM="/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh"
 
-/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh register-bitcoin \
-  --pool-id mflex \
-  --coin multiflex \
-  --app-id retro-mike-mflex-node \
-  --rpc-port 9010 \
-  --zmq-port 7010 \
-  --stratum-port 6010 \
-  --daemon-host retro-mike-mflex-node_node_1 \
-  --rpc-wallet pool \
-  --getnewaddress-params '["","legacy"]' \
-  --mflex-enabled \
-  || echo "WARN: MFLEX pool auto-register failed (run pool-manager.sh manually)."
+echo "== MFLEX post-install: auto-register MFLEX pool for MiningCore (best-effort) =="
+
+if [ ! -x "$PM" ]; then
+  echo "[mflex post-install] WARN: pool-manager not found/executable at $PM"
+  exit 0
+fi
+
+# try a few times (node may still be booting)
+for i in 1 2 3 4 5; do
+  "$PM" register-bitcoin \
+    --pool-id mflex \
+    --coin multiflex \
+    --app-id retro-mike-mflex-node \
+    --rpc-port 9010 \
+    --zmq-port 7010 \
+    --stratum-port 6010 \
+    --daemon-host retro-mike-mflex-node_node_1 \
+    --rpc-wallet pool \
+    --getnewaddress-params '["","legacy"]' \
+    --mflex-enabled
+  rc=$?
+  if [ $rc -eq 0 ]; then
+    echo "[mflex post-install] OK: MFLEX pool registered"
+    exit 0
+  fi
+  echo "[mflex post-install] attempt $i failed (rc=$rc) - retry in 5s"
+  sleep 5
+done
+
+echo "[mflex post-install] WARN: auto-register did not complete. You can run manually:"
+echo "  sudo $PM register-bitcoin --pool-id mflex --coin multiflex --app-id retro-mike-mflex-node --rpc-port 9010 --zmq-port 7010 --stratum-port 6010 --daemon-host retro-mike-mflex-node_node_1 --rpc-wallet pool --getnewaddress-params '["","legacy"]' --mflex-enabled"
+exit 0

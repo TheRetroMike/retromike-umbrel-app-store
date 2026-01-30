@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+POOL_MANAGER="/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh"
+if [ ! -x "${POOL_MANAGER}" ]; then
+  exit 0
+fi
+
+"${POOL_MANAGER}" register-xmr \
+  --pool-id xmr \
+  --coin monero \
+  --app-id retro-mike-xmr-wallet \
+  --node-rpc-port 9009 \
+  --wallet-rpc-port 18082 \
+  --stratum-port 6009 \
+  --node-host retro-mike-xmr-node_node_1 \
+  --wallet-host retro-mike-xmr-wallet_wallet_1 \
+  --randomx-realm xmr

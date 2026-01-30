@@ -1,3 +1,5 @@
+version: "3.7"
+
 services:
 
   app_proxy:
@@ -11,6 +13,7 @@ services:
     volumes:
       - /home/umbrel/.miningcore/coins.json:/app/build/coins.json
       - /home/umbrel/.miningcore/config.json:/app/config.json
+      - /home/umbrel/umbrel/app-data/retro-mike-vtc-node/.vertcoin:/.vertcoin
     ports:
       - 6001-6025:6001-6025
       - 4000:4000

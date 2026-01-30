@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PM="/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh"
+[ -x "${PM}" ] || exit 0
+
+"${PM}" unregister --pool-id "btc"

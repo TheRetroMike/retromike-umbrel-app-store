@@ -1,3 +1,5 @@
+version: "3.7"
+
 services:
   app_proxy:
     environment:
@@ -19,27 +21,24 @@ services:
       - 7010:7010
       - 9010:9010
       - 24200:24200
-    entrypoint:
-      - multiflexd
-      - -printtoconsole
-      - -prune=550
-      - -server
-      - -rpcbind=0.0.0.0
-      - -rpcport=9010
-      - -rpcallowip=0.0.0.0/0
-      - -rpcuser=pooluser
-      - -rpcpassword=poolpassword
-      - -zmqpubhashblock=tcp://0.0.0.0:7010
-      - -zmqpubhashblockhwm=10000
-      - -addresstype=legacy
-      - -changetype=legacy
+    command: >
+      multiflexd
+      -printtoconsole
+      -rpcallowip=0.0.0.0/0
+      -rpcbind=0.0.0.0
+      -rpcport=9010
+      -rpcuser=pooluser
+      -rpcpassword=poolpassword
+      -zmqpubhashblock=tcp://0.0.0.0:7010
+      -prune=550
     volumes:
       - ${APP_DATA_DIR}/.multiflex:/root/.multiflex
       - /home/umbrel/.miningcore/wallet-backups:/backups
 
   wallet_autoload:
     image: curlimages/curl:8.6.0
-    entrypoint: ["/bin/sh", "/wallet-autoload.sh"]
+    entrypoint: /entrypoint.sh
+    command: sh -lc "sh /wallet-autoload.sh"
     restart: unless-stopped
     network_mode: service:node
     depends_on:

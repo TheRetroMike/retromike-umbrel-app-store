@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Upload done</title>
+  <style>
+    body { font-family: sans-serif; margin: 18px; }
+    pre { background: #f6f6f6; padding: 12px; border-radius: 8px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+<h2>Upload done</h2>
+
+<p><b>Pool:</b> {{pool_id}}<br/>
+<b>Wallet:</b> {{wallet}}<br/>
+<b>File:</b> {{filename}}<br/>
+<b>Stored at:</b> <code>{{dest}}</code></p>
+
+<h3>SSH restore commands</h3>
+<pre>{{cmds}}</pre>
+
+<p><a href="/">Back</a></p>
+</body>
+</html>

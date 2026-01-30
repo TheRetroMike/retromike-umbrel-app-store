@@ -1,0 +1,26 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      APP_HOST: retro-mike-doge-node_web_1
+      APP_PORT: 8080
+  web:
+    image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: on-failure
+    depends_on:
+      - node
+  node:
+    image: theretromike/nodes:dogecoin
+    restart: on-failure
+    stop_grace_period: 1m
+    volumes:
+      - ${APP_DATA_DIR}/.dogecoin:/root/.dogecoin
+    ports:
+      - 9003:9003    # RPC
+      - 7003:7003    # ZMQ
+      - 22556:22556  # P2P
+    entrypoint: "dogecoind -printtoconsole -server -prune=2200 -wallet=default -zmqpubhashblock=tcp://0.0.0.0:7003 -rpcbind=0.0.0.0 -rpcport=9003 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword"

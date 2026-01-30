@@ -1,0 +1,31 @@
+manifestVersion: 1.1
+id: retro-mike-xec-node
+name: eCash (XEC) Node
+tagline: eCash Node. This is a general node app for eCash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the eCash network.
+icon: https://cryptologos.cc/logos/ecash-xec-logo.png?v=040
+category: Mining Nodes
+version: "1.0.1-umbrel1"
+port: 5012
+description: |
+  eCash Node. This is a general node app for eCash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the eCash network.
+
+  If you find this app useful, please consider donating
+
+  XEC - ecash:qpv028l4acfc3nm932u2qgnnmxkj8swa5qsfgvscq7
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://github.com/TheRetroMike/ecash
+repo: https://github.com/TheRetroMike/ecash
+support: https://github.com/TheRetroMike/ecash
+gallery:
+  - https://cryptologos.cc/logos/ecash-xec-logo.png?v=040
+releaseNotes: >-
+  2026.01.14 - Legacy Mode
+  2026.01.13 - Initial Release
+dependencies:
+  - retro-mike-miningcore
+path: ""
+defaultUsername: ""
+defaultPassword: ""

@@ -1,0 +1,30 @@
+manifestVersion: 1.1
+id: retro-mike-dgb-node-sha256
+name: Digibyte (DGB) Node - SHA256
+tagline: Digibyte Node. Sha256 Algo. This is a general node app for Digibyte and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Digibyte network.
+icon: https://github.com/DigiByte-Core/digibyte-logos/blob/master/Logos%20Bitmap/transparent%20bg/ClearBg%20DigiByte.png?raw=true
+category: Mining Nodes
+version: "1.0.1"
+port: 5006
+description: |
+  Digibyte Node. This is a general node app for Digibyte that runs against the SHA256 algo and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Digibyte network.
+
+  If you find this app useful, please consider donating
+
+  DGB - DGjhBN3ckfAjijfcptH66TNCTHpzBdxtMc
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://github.com/TheRetroMike/digibyte
+repo: https://github.com/TheRetroMike/digibyte
+support: https://github.com/TheRetroMike/digibyte
+gallery:
+  - https://github.com/DigiByte-Core/digibyte-logos/blob/master/Logos%20Bitmap/transparent%20bg/ClearBg%20DigiByte.png?raw=true
+releaseNotes: >-
+  2025.11.16 - Initial Release
+dependencies:
+  - retro-mike-miningcore
+path: ""
+defaultUsername: ""
+defaultPassword: ""

@@ -1,0 +1,40 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      # The format here is: <app-id>_<docker-service-name>_1
+      APP_HOST: retro-mike-kaspa-solo-node_web_1
+      APP_PORT: 8080
+    
+  server:
+    image: theretromike/stratums:kHeavyHash
+    user: "1000:1000"
+    init: true
+    ports:
+      - 5001:5001
+    entrypoint: "/app --stratum :5001 --node kaspad:16110"
+    depends_on:
+      - kaspad
+    #entrypoint: "/app --stratum :5001 --node host.docker.internal:16110"
+  web:
+    image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: on-failure
+    depends_on:
+      - server
+  kaspad:
+    image: kaspanet/rusty-kaspad:v1.0.1@sha256:5bc3195c2cd2d171885781ed55ead9485d93c7bd7b784d46e9e393c96757fe22
+    restart: on-failure
+    stop_grace_period: 1m
+    volumes:
+      - ${APP_DATA_DIR}/data/app:/data
+      - ${APP_DATA_DIR}/data/logs:/logs
+    ports:
+      - 16110:16110  # GRPC
+      - 16111:16111  # P2P
+      - 17110:17110  # WRPC (Borsh)
+      - 18110:18110  # WRPC (JSON)
+    entrypoint: "/app/entrypoint.sh kaspad --rpclisten=0.0.0.0:16110 --rpclisten-borsh=0.0.0.0:17110 --rpclisten-json=0.0.0.0:18110 --loglevel=info --yes"
