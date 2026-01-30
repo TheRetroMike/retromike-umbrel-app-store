@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-if [ ! -x "/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" ]; then
-  exit 0
-fi
-
-"/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh" register-bitcoin   --pool-id "doge"   --coin "dogecoin"   --app-id "retro-mike-doge-node"   --rpc-port "9003"   --zmq-port "7003"   --stratum-port "6003"   --daemon-host "retro-mike-doge-node_node_1"
