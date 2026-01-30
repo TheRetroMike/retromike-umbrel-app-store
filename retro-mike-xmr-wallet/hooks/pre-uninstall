@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-POOL_MANAGER="/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh"
-if [ ! -x "${POOL_MANAGER}" ]; then
-  exit 0
-fi
-
-"${POOL_MANAGER}" unregister --pool-id xmr
