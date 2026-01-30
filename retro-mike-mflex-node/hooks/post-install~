@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MC_HOME="/home/umbrel/.miningcore"
+mkdir -p "${MC_HOME}/pools.d" "${MC_HOME}/wallet-backups"
+chown -R umbrel:umbrel "${MC_HOME}" || true
+find "${MC_HOME}" -type d -exec chmod 755 {} + || true
+find "${MC_HOME}" -type f -exec chmod 644 {} + || true
+
+PM="/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh"
+[ -x "${PM}" ] || exit 0
+
+ARGS=( register-bitcoin
+  --pool-id "mflex"
+  --coin "multiflex"
+  --app-id "retro-mike-mflex-node"
+  --rpc-port "9010"
+  --zmq-port "7010"
+  --stratum-port "6010"
+  --daemon-host "retro-mike-mflex-node_node_1"
+  --rpc-wallet "pool"
+  --getnewaddress-params '["","legacy"]'
+  --mflex-enabled
+)
+
+# Run pool-manager as root (needs docker access) but it will repair ownership
+# of /home/umbrel/.miningcore automatically.
+# Cap runtime so the Umbrel installer can't hang forever.
+timeout 600 "${PM}" "${ARGS[@]}" || {
+  echo "[post-install] WARN: Pool registration failed/timed out."
+  echo "You can rerun manually:"
+  echo "  sudo ${PM} ${ARGS[*]}"
+  exit 0
+}

@@ -1,75 +1,139 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ASSETS_DIR="${APP_DIR}/assets"
+# NOTE: Do NOT use `set -euo pipefail` here.
+# Umbrel runs hooks non-interactively, but we still want this hook to be resilient.
 
-MC_HOME="/home/umbrel/.miningcore"
-mkdir -p "${MC_HOME}/pools.d" "${MC_HOME}/wallet-backups"
+APP_DATA_DIR="${APP_DATA_DIR:-/home/umbrel/umbrel/app-data/retro-mike-miningcore}"
+MC_DIR="/home/umbrel/.miningcore"
 
-# Seed defaults (only if missing)
-if [ ! -f "${MC_HOME}/coins.json" ]; then
-  cp "${ASSETS_DIR}/coins.json" "${MC_HOME}/coins.json"
-fi
-if [ ! -f "${MC_HOME}/config.base.json" ]; then
-  cp "${ASSETS_DIR}/config.base.json" "${MC_HOME}/config.base.json"
-fi
-if [ ! -f "${MC_HOME}/fees.json" ]; then
-  cp "${ASSETS_DIR}/fees.json" "${MC_HOME}/fees.json"
-fi
+seed_if_missing() {
+  local src="$1"
+  local dst="$2"
 
-# Ensure Postgres DB + schema exist (idempotent)
-# Only run if postgres app is installed/running
-PG_CONTAINER_ID="$(docker ps -q \
-  --filter label=com.docker.compose.project=retro-mike-postgres \
-  --filter label=com.docker.compose.service=db || true)"
+  # Only seed if destination missing AND source exists
+  if [ ! -f "$dst" ] && [ -f "$src" ]; then
+    cp -a "$src" "$dst"
+  fi
+}
 
-if [ -n "${PG_CONTAINER_ID}" ]; then
-  echo "[miningcore pre-start] Postgres container found: ${PG_CONTAINER_ID}"
-  # wait for DB
-  for i in $(seq 1 60); do
-    if docker exec "${PG_CONTAINER_ID}" pg_isready -U umbrel -d umbrel >/dev/null 2>&1; then
-      break
-    fi
-    sleep 1
-  done
+fix_mc_permissions() {
+  [ -d "$MC_DIR" ] || return 0
 
-  # Create role+db (idempotent)
-  docker exec -i "${PG_CONTAINER_ID}" psql -U umbrel -d umbrel <<'SQL' || true
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'miningcore') THEN
-    CREATE ROLE miningcore LOGIN PASSWORD 'miningcore';
-  END IF;
-END$$;
-SQL
+  chown -R 1000:1000 "$MC_DIR" 2>/dev/null || true
+  find "$MC_DIR" -type d -exec chmod 755 {} + 2>/dev/null || true
+  find "$MC_DIR" -type f -exec chmod 644 {} + 2>/dev/null || true
+}
 
-  docker exec -i "${PG_CONTAINER_ID}" psql -U umbrel -d umbrel <<'SQL' || true
-SELECT 'CREATE DATABASE miningcore OWNER miningcore'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'miningcore')\gexec
-SQL
+mkdir -p "$MC_DIR/pools.d" "$MC_DIR/wallet-backups"
 
-  # Load schema (safe to run multiple times, but will error on existing tables; ignore)
-  docker exec -i "${PG_CONTAINER_ID}" psql -U umbrel -d miningcore -f - <<'SQL' || true
-\set ON_ERROR_STOP on
-\i /dev/stdin
-SQL
-  # We intentionally don't embed the whole schema here; miningcore-server will work once schema exists.
-  # The first install run will normally execute the schema via existing assets in older setups.
+echo "== MiningCore pre-start: seed base files if missing =="
+seed_if_missing "$APP_DATA_DIR/assets/config.base.json" "$MC_DIR/config.base.json"
+seed_if_missing "$APP_DATA_DIR/assets/fees.json"        "$MC_DIR/fees.json"
+
+# coins.json may live either in assets/ or app root depending on store layout
+seed_if_missing "$APP_DATA_DIR/assets/coins.json" "$MC_DIR/coins.json"
+seed_if_missing "$APP_DATA_DIR/coins.json"       "$MC_DIR/coins.json"
+
+# If config.json accidentally became a directory, remove it
+if [ -d "$MC_DIR/config.json" ]; then
+  rm -rf "$MC_DIR/config.json"
 fi
 
-# Render config.json from base + pools.d
-python3 "${APP_DIR}/scripts/render-config.py" \
-  --base "${MC_HOME}/config.base.json" \
-  --coins "${MC_HOME}/coins.json" \
-  --pools "${MC_HOME}/pools.d" \
-  --out  "${MC_HOME}/config.json"
+# Ensure DB creds are consistent (miningcore/miningcore)
+python3 - <<'PY'
+import json
+from pathlib import Path
 
-# Keep ownership & permissions sane.
-# NOTE: some helper scripts may run as root; without this, pools.d can end up
-#       unreadable for the Umbrel user and Miningcore won't start.
-chown -R umbrel:umbrel "${MC_HOME}" || true
+TARGET = {
+    "host": "retro-mike-postgres_db_1",
+    "port": 5432,
+    "user": "miningcore",
+    "password": "miningcore",
+    "database": "miningcore",
+}
 
-# Directories need the execute bit, otherwise the Umbrel user can't read pools.d
-find "${MC_HOME}" -type d -exec chmod 755 {} + || true
-find "${MC_HOME}" -type f -exec chmod 644 {} + || true
+def patch_postgres(d: dict) -> bool:
+    changed = False
+
+    # Newer/this repo layout: persistence.postgres
+    if isinstance(d.get("persistence"), dict):
+        pers = d["persistence"]
+        if isinstance(pers.get("postgres"), dict):
+            pg = pers["postgres"]
+            for k, v in TARGET.items():
+                if pg.get(k) != v:
+                    pg[k] = v
+                    changed = True
+
+    # Older layout some forks used: cluster.persistence
+    if isinstance(d.get("cluster"), dict) and isinstance(d["cluster"].get("persistence"), dict):
+        pers = d["cluster"]["persistence"]
+        for k in ("user", "password", "database"):
+            if pers.get(k) != TARGET[k]:
+                pers[k] = TARGET[k]
+                changed = True
+
+    return changed
+
+for path in (Path("/home/umbrel/.miningcore/config.base.json"), Path("/home/umbrel/.miningcore/config.json")):
+    if not path.exists() or not path.is_file():
+        continue
+    try:
+        d = json.loads(path.read_text())
+    except Exception:
+        continue
+
+    if patch_postgres(d):
+        path.write_text(json.dumps(d, indent=2) + "\n")
+        print("patched", path)
+PY
+
+# Remove a couple of stale fragments we never want auto-enabled
+rm -f "$MC_DIR/pools.d/bch.json" "$MC_DIR/pools.d/bch.json.disabled" 2>/dev/null || true
+
+# If config.json is missing, generate from config.base.json + pools.d fragments
+if [ ! -f "$MC_DIR/config.json" ]; then
+  python3 "$APP_DATA_DIR/scripts/render-config.py" >/dev/null 2>&1 || true
+fi
+
+fix_mc_permissions
+
+echo "== MiningCore pre-start: ensure postgres role/db/schema =="
+PG_CONTAINER_ID="$(docker ps --filter name=retro-mike-postgres_db_1 --format '{{.ID}}' | head -n1)"
+if [ -z "$PG_CONTAINER_ID" ]; then
+  echo "ERROR: postgres container retro-mike-postgres_db_1 not found"
+  exit 0
+fi
+
+# Wait briefly for postgres to accept connections
+for i in $(seq 1 60); do
+  if docker exec "$PG_CONTAINER_ID" pg_isready -U umbrel -d umbrel >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+  if [ "$i" -eq 60 ]; then
+    echo "ERROR: postgres not ready (pg_isready failed)"
+    exit 0
+  fi
+done
+
+# role miningcore
+if ! docker exec "$PG_CONTAINER_ID" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -tc \
+  "SELECT 1 FROM pg_roles WHERE rolname='miningcore';" | grep -q 1; then
+  docker exec "$PG_CONTAINER_ID" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -c \
+    "CREATE ROLE miningcore LOGIN PASSWORD 'miningcore';"
+fi
+
+# db miningcore
+if ! docker exec "$PG_CONTAINER_ID" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -tc \
+  "SELECT 1 FROM pg_database WHERE datname='miningcore';" | grep -q 1; then
+  docker exec "$PG_CONTAINER_ID" psql -U umbrel -d umbrel -v ON_ERROR_STOP=1 -c \
+    "CREATE DATABASE miningcore OWNER miningcore;"
+fi
+
+# schema (idempotent - miningcore-schema.sql uses IF NOT EXISTS)
+if [ -f "$APP_DATA_DIR/assets/miningcore-schema.sql" ]; then
+  cat "$APP_DATA_DIR/assets/miningcore-schema.sql" | docker exec -i "$PG_CONTAINER_ID" psql -U umbrel -d miningcore >/dev/null 2>&1 || true
+fi
+
+fix_mc_permissions

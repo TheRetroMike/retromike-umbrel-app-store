@@ -1,31 +1,23 @@
-version: "3.7"
-
 services:
+
   app_proxy:
     environment:
       APP_HOST: retro-mike-miningcore_web_1
       APP_PORT: 8080
-
-  web:
-    image: amir20/dozzle:v8.12.8
-    restart: on-failure
-    stop_grace_period: 1m
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
   server:
     image: ghcr.io/aalnase/miningcore-mflex:1.3.0-mflex7
     user: "1000:1000"
-    restart: on-failure
-    stop_grace_period: 1m
+    init: true
     volumes:
-      - /home/umbrel/.miningcore/coins.json:/app/build/coins.json:ro
+      - /home/umbrel/.miningcore/coins.json:/app/build/coins.json
       - /home/umbrel/.miningcore/config.json:/app/config.json
     ports:
       - 6001-6025:6001-6025
       - 4000:4000
-
-networks:
-  default:
-    name: umbrel_main_network
-    external: true
+  web:
+    image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: on-failure
+    depends_on:
+      - server

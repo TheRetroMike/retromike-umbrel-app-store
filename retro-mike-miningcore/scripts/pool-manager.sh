@@ -1,393 +1,324 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Umbrel helper to register/unregister a Bitcoin-family coin daemon with Miningcore
-# by creating a pool fragment in /home/umbrel/.miningcore/pools.d and rendering
-# /home/umbrel/.miningcore/config.json.
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MC_HOME="/home/umbrel/.miningcore"
 POOLS_DIR="${MC_HOME}/pools.d"
-RENDER_SCRIPT="/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/render-config.py"
+RENDER_PY="${SCRIPT_DIR}/render-config.py"
+MININGCORE_CONTAINER="retro-mike-miningcore_server_1"
 
-RPC_HOST="127.0.0.1"
 RPC_USER="pooluser"
 RPC_PASS="poolpassword"
-RPC_PROTO="http"
+RPC_HOST="127.0.0.1"
 
 log() { echo "[pool-manager] $*"; }
 die() { echo "[pool-manager] ERROR: $*" >&2; exit 1; }
 
-usage() {
-  cat <<'USAGE'
-Usage:
-  pool-manager.sh register-bitcoin --pool-id <id> --coin <coinKey> --app-id <umbrelAppId> \
-    --rpc-port <port> --zmq-port <port> --stratum-port <port> --daemon-host <docker-hostname> \
-    [--address-type <legacy|...>] \
-    [--getnewaddress-params <json-array-string>] \
-    [--rpc-wallet <walletname>] \
-    [--mflex-enabled]
+need() { command -v "$1" >/dev/null 2>&1 || die "Missing command: $1"; }
 
-  pool-manager.sh unregister --pool-id <id>
-USAGE
-}
-
-fix_mc_perms() {
-  [ -d "${MC_HOME}" ] || return 0
-
-  if [ "$(id -u)" -eq 0 ]; then
-    chown -R umbrel:umbrel "${MC_HOME}" 2>/dev/null || true
+rpc_url() {
+  local port="$1"
+  local wallet="${2:-}"
+  if [ -n "${wallet}" ]; then
+    echo "http://${RPC_HOST}:${port}/wallet/${wallet}"
+  else
+    echo "http://${RPC_HOST}:${port}/"
   fi
-
-  # Directories MUST have execute-bit, otherwise Permission denied on pools.d
-  find "${MC_HOME}" -type d -exec chmod 755 {} + 2>/dev/null || true
-  find "${MC_HOME}" -type f -exec chmod 644 {} + 2>/dev/null || true
 }
-
-# Always try to repair ownership/permissions, even when a command fails.
-trap 'fix_mc_perms >/dev/null 2>&1 || true' EXIT
 
 rpc_call() {
   local port="$1"; shift
   local method="$1"; shift
-  local params="${1:-[]}"
-  local wallet="${2:-}"
+  local params="${1:-[]}"; shift || true
+  local wallet="${1:-}"; shift || true
 
-  local url="${RPC_PROTO}://${RPC_HOST}:${port}/"
-  if [ -n "${wallet}" ]; then
-    url="${RPC_PROTO}://${RPC_HOST}:${port}/wallet/${wallet}"
-  fi
+  local url
+  url="$(rpc_url "${port}" "${wallet}")"
 
-  curl -sS --user "${RPC_USER}:${RPC_PASS}" -H 'content-type: text/plain;' \
-    --data-binary "{\"jsonrpc\":\"1.0\",\"id\":\"pm\",\"method\":\"${method}\",\"params\":${params}}" \
+  local body
+  body="$(printf '{"jsonrpc":"1.0","id":"umbrel","method":"%s","params":%s}' "${method}" "${params}")"
+
+  curl -sS --user "${RPC_USER}:${RPC_PASS}" \
+    -H 'content-type: text/plain;' \
+    --data-binary "${body}" \
     "${url}" || true
 }
 
 rpc_ok() {
   python3 - <<'PY'
 import sys, json
-raw = sys.stdin.read()
-if not raw.strip():
-    sys.exit(1)
 try:
-    d = json.loads(raw)
+    d=json.load(sys.stdin)
+    ok = isinstance(d, dict) and d.get("error") is None
+    sys.exit(0 if ok else 1)
 except Exception:
     sys.exit(1)
-sys.exit(0 if d.get("error") is None else 1)
 PY
 }
 
 rpc_result() {
   python3 - <<'PY'
 import sys, json
-raw = sys.stdin.read()
-if not raw.strip():
-    sys.exit(0)
-try:
-    d = json.loads(raw)
-except Exception:
-    sys.exit(0)
-r = d.get("result")
-if r is None:
-    sys.exit(0)
-# Print strings without quotes, keep others as JSON
-if isinstance(r, str):
-    print(r)
-else:
-    import json as _j
-    print(_j.dumps(r))
-PY
-}
-
-rpc_error() {
-  python3 - <<'PY'
-import sys, json
-raw = sys.stdin.read()
-if not raw.strip():
-    sys.exit(0)
-try:
-    d = json.loads(raw)
-except Exception:
-    sys.exit(0)
-e = d.get("error") or {}
-msg = e.get("message")
-code = e.get("code")
-if msg is None and code is None:
-    sys.exit(0)
-print(f"code={code} message={msg}")
+d=json.load(sys.stdin)
+print(d.get("result"))
 PY
 }
 
 wait_for_rpc() {
   local port="$1"
-  log "Waiting for RPC on ${RPC_HOST}:${port} ..."
-  while true; do
-    if rpc_call "${port}" getblockchaininfo '[]' | rpc_ok; then
-      break
+  local tries="${2:-120}"
+  for _i in $(seq 1 "${tries}"); do
+    local out
+    out="$(rpc_call "${port}" getblockchaininfo '[]')"
+    if [ -n "${out}" ] && echo "${out}" | rpc_ok >/dev/null 2>&1; then
+      return 0
     fi
     sleep 1
   done
-}
-
-wallet_is_loaded() {
-  local port="$1"
-  local wallet="$2"
-  rpc_call "${port}" listwallets '[]' | python3 - "${wallet}" <<'PY'
-import sys, json
-wallet=sys.argv[1]
-try:
-    d=json.load(sys.stdin)
-except Exception:
-    print("0"); sys.exit(0)
-lst=d.get("result") or []
-print("1" if wallet in lst else "0")
-PY
+  return 1
 }
 
 ensure_wallet_loaded() {
   local port="$1"
   local wallet="$2"
-  [ -n "${wallet}" ] || return 0
 
-  local last_lw="" last_cw=""
-
-  for _ in 1 2 3; do
-    if [ "$(wallet_is_loaded "${port}" "${wallet}")" = "1" ]; then
-      return 0
-    fi
-
-    # Try loadwallet first
-    last_lw="$(rpc_call "${port}" loadwallet "[\"${wallet}\"]")"
-    if [ "$(wallet_is_loaded "${port}" "${wallet}")" = "1" ]; then
-      return 0
-    fi
-
-    # Then try createwallet (if missing)
-    last_cw="$(rpc_call "${port}" createwallet "[\"${wallet}\"]")"
-    if [ "$(wallet_is_loaded "${port}" "${wallet}")" = "1" ]; then
-      return 0
-    fi
-
-    sleep 1
-  done
-
-  log "loadwallet response: ${last_lw}"
-  log "createwallet response: ${last_cw}"
-  die "Wallet \"${wallet}\" konnte nicht geladen/erstellt werden (siehe Antworten oben)."
+  # createwallet / loadwallet sind am root-endpoint (nicht /wallet/<name>)
+  rpc_call "${port}" createwallet "[\"${wallet}\"]" >/dev/null 2>&1 || true
+  rpc_call "${port}" loadwallet   "[\"${wallet}\"]" >/dev/null 2>&1 || true
 }
 
-get_pool_address() {
-  local port="$1"
-  local wallet="$2"
-  local getnewaddress_params="$3"
-
-  local out addr err
-  out="$(rpc_call "${port}" getnewaddress "${getnewaddress_params}" "${wallet}")"
-  addr="$(printf '%s' "${out}" | rpc_result | tr -d '"')"
-
-  if [ -z "${addr}" ] || [ "${addr}" = "None" ]; then
-    err="$(printf '%s' "${out}" | rpc_error)"
-    die "getnewaddress returned empty. ${err:-raw=${out}}"
-  fi
-
-  echo "${addr}"
-}
-
-write_pool_json() {
+write_pool_fragment() {
   local pool_id="$1"
   local coin="$2"
-  local daemon_host="$3"
+  local address="$3"
   local rpc_port="$4"
   local zmq_port="$5"
   local stratum_port="$6"
-  local address="$7"
-  local address_type="$8"
-  local mflex_enabled="$9"
-  local app_id="${10}"
+  local daemon_host="$7"
+  local address_type="${8:-}"
+  local mflex_enabled="${9:-false}"
+  local app_id="${10:-}"
 
   mkdir -p "${POOLS_DIR}"
 
-  ADDR="${address}" \
-  POOL_ID="${pool_id}" \
-  COIN="${coin}" \
-  DAEMON_HOST="${daemon_host}" \
-  RPC_PORT="${rpc_port}" \
-  ZMQ_PORT="${zmq_port}" \
-  STRATUM_PORT="${stratum_port}" \
-  ADDRESS_TYPE="${address_type}" \
-  MFLEX_ENABLED="${mflex_enabled}" \
+  POOL_ID="${pool_id}" COIN="${coin}" ADDR="${address}" \
+  RPC_PORT="${rpc_port}" ZMQ_PORT="${zmq_port}" STRATUM_PORT="${stratum_port}" \
+  DAEMON_HOST="${daemon_host}" ADDRESS_TYPE="${address_type}" MFLEX_ENABLED="${mflex_enabled}" \
   APP_ID="${app_id}" \
   python3 - <<'PY'
 import os, json
 from pathlib import Path
 
-mc_home = Path("/home/umbrel/.miningcore")
-pools_dir = mc_home / "pools.d"
-fees_path = mc_home / "fees.json"
+pool_id=os.environ["POOL_ID"]
+coin=os.environ["COIN"]
+addr=os.environ["ADDR"]
+rpc_port=int(os.environ["RPC_PORT"])
+zmq_port=int(os.environ["ZMQ_PORT"])
+stratum_port=os.environ["STRATUM_PORT"]
+daemon_host=os.environ["DAEMON_HOST"]
+address_type=os.environ.get("ADDRESS_TYPE","").strip()
+mflex_enabled=os.environ.get("MFLEX_ENABLED","false").lower()=="true"
+app_id=os.environ.get("APP_ID","").strip()
 
-pool_id = os.environ["POOL_ID"]
-coin = os.environ["COIN"]
-daemon_host = os.environ["DAEMON_HOST"]
-rpc_port = int(os.environ["RPC_PORT"])
-zmq_port = int(os.environ["ZMQ_PORT"])
-stratum_port = os.environ["STRATUM_PORT"]
-address = os.environ["ADDR"]
-address_type = os.environ.get("ADDRESS_TYPE","legacy")
-mflex_enabled = os.environ.get("MFLEX_ENABLED","false").lower() == "true"
-app_id = os.environ.get("APP_ID","")
+pool={
+  "id": pool_id,
+  "enabled": True,
+  "coin": coin,
+  "address": addr,
 
-reward_recipients = []
-if fees_path.exists():
-    try:
-        reward_recipients = json.loads(fees_path.read_text())
-    except Exception:
-        reward_recipients = []
+  "enableAsicBoost": True,
+  "blockRefreshInterval": 0,
+  "jobRebroadcastTimeout": 10,
+  "clientConnectionTimeout": 600,
 
-pool = {
-    "id": pool_id,
+  "banning": {
     "enabled": True,
-    "coin": coin,
-    "address": address,
-    "addressType": address_type,
-    "rewardRecipients": reward_recipients,
-    "paymentProcessing": {
-        "enabled": True,
-        "minimumPayment": 0.001,
-        "payoutScheme": "SOLO",
-    },
-    "ports": {
-        stratum_port: {
-            "listenAddress": "0.0.0.0",
-            "ssl": False,
-            "difficulty": 0.5,
-            "varDiff": {
-                "minDiff": 0.05,
-                "maxDiff": 2048,
-                "targetTime": 15,
-                "retargetTime": 90,
-                "variancePercent": 30,
-            },
-        }
-    },
-    "daemons": [{
-        "host": daemon_host,
-        "port": rpc_port,
-        "user": "pooluser",
-        "password": "poolpassword",
-        "zmqBlockNotifySocket": f"tcp://{daemon_host}:{zmq_port}",
-    }],
-    "features": {
-        "enableAsicBoost": True,
-        "blockNotify": True,
-    },
-    "_umbrel": {
-        "appId": app_id
+    "time": 600,
+    "invalidPercent": 50,
+    "checkThreshold": 50
+  },
+
+  "ports": {
+    stratum_port: {
+      "name": "General",
+      "listenAddress": "0.0.0.0",
+      "difficulty": 1024,
+      "varDiff": {
+        "minDiff": 1,
+        "targetTime": 15,
+        "retargetTime": 90,
+        "variancePercent": 30
+      }
     }
+  },
+
+  "daemons": [
+    {
+      "host": daemon_host,
+      "port": rpc_port,
+      "user": "pooluser",
+      "password": "poolpassword",
+      "zmqBlockNotifySocket": f"tcp://{daemon_host}:{zmq_port}"
+    }
+  ],
+
+  "paymentProcessing": {
+    "enabled": True,
+    "minimumPayment": 0.001,
+    "payoutScheme": "SOLO",
+    "payoutSchemeConfig": { "factor": 2 }
+  }
 }
 
-if mflex_enabled:
-    pool["mflex"] = {"enabled": True}
+if address_type:
+  pool["addressType"]=address_type
 
-pools_dir.mkdir(parents=True, exist_ok=True)
-out_path = pools_dir / f"{pool_id}.json"
-out_path.write_text(json.dumps(pool, indent=2) + "\n")
+if mflex_enabled:
+  pool["mflex"]={"enabled": True}
+
+# fees.json optional -> rewardRecipients überall einfügen
+fees_path = Path("/home/umbrel/.miningcore/fees.json")
+if fees_path.exists():
+  try:
+    fees = json.loads(fees_path.read_text())
+    rr = fees.get("rewardRecipients")
+    if isinstance(rr, list) and rr:
+      pool["rewardRecipients"] = rr
+  except Exception:
+    pass
+
+if app_id:
+  pool["_umbrel"] = {
+    "appId": app_id,
+    "rpcPort": rpc_port,
+    "zmqPort": zmq_port,
+    "stratumPort": stratum_port
+  }
+
+out=Path("/home/umbrel/.miningcore/pools.d")/f"{pool_id}.json"
+out.write_text(json.dumps(pool, indent=2))
+print("Wrote", out)
 PY
 }
 
-render_config() {
-  [ -x "${RENDER_SCRIPT}" ] || die "render-config.py not found at ${RENDER_SCRIPT}"
+fix_mc_permissions() {
+  # pool-manager läuft oft als root (Hook/CLI) -> danach muss ~/.miningcore dem User umbrel gehören
+  local MC_DIR="/home/umbrel/.miningcore"
+  [ -d "$MC_DIR" ] || return 0
 
-  python3 "${RENDER_SCRIPT}" \
-    --base "${MC_HOME}/config.base.json" \
-    --coins "${MC_HOME}/coins.json" \
-    --pools "${POOLS_DIR}" \
-    --out  "${MC_HOME}/config.json"
+  chown -R 1000:1000 "$MC_DIR" 2>/dev/null || true
+  find "$MC_DIR" -type d -exec chmod 755 {} + 2>/dev/null || true
+  find "$MC_DIR" -type f -exec chmod 644 {} + 2>/dev/null || true
+}
+
+render_config() {
+  python3 "/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/render-config.py"
+  fix_mc_permissions
 }
 
 restart_miningcore() {
-  # Miningcore container name on Umbrel
-  if docker ps -a --format '{{.Names}}' | grep -q '^retro-mike-miningcore_server_1$'; then
-    docker restart retro-mike-miningcore_server_1 >/dev/null 2>&1 || true
+  if docker ps --format '{{.Names}}' | grep -qx "${MININGCORE_CONTAINER}"; then
+    docker restart "${MININGCORE_CONTAINER}" >/dev/null || true
   else
-    log "WARN: retro-mike-miningcore_server_1 not found (skipping restart)"
+    log "WARN: MiningCore container not running: ${MININGCORE_CONTAINER}"
   fi
 }
 
-cmd="${1:-}"
-shift || true
+cmd_register_bitcoin() {
+  local pool_id="" coin="" app_id="" rpc_port="" zmq_port="" stratum_port="" daemon_host=""
+  local address_type=""
+  local getnewaddress_params="[]"
+  local rpc_wallet=""
+  local mflex_enabled="false"
 
-case "${cmd}" in
-  register-bitcoin)
-    pool_id="" coin="" app_id="" rpc_port="" zmq_port="" stratum_port="" daemon_host=""
-    address_type="legacy"
-    getnewaddress_params='["","legacy"]'
-    rpc_wallet=""
-    mflex_enabled="false"
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --pool-id) pool_id="$2"; shift 2;;
+      --coin) coin="$2"; shift 2;;
+      --app-id) app_id="$2"; shift 2;;
+      --rpc-port) rpc_port="$2"; shift 2;;
+      --zmq-port) zmq_port="$2"; shift 2;;
+      --stratum-port) stratum_port="$2"; shift 2;;
+      --daemon-host) daemon_host="$2"; shift 2;;
+      --address-type) address_type="$2"; shift 2;;
+      --getnewaddress-params) getnewaddress_params="$2"; shift 2;;
+      --rpc-wallet) rpc_wallet="$2"; shift 2;;
+      --mflex-enabled) mflex_enabled="true"; shift 1;;
+      *) die "Unknown arg: $1";;
+    esac
+  done
 
-    while [ "$#" -gt 0 ]; do
-      case "$1" in
-        --pool-id) pool_id="$2"; shift 2;;
-        --coin) coin="$2"; shift 2;;
-        --app-id) app_id="$2"; shift 2;;
-        --rpc-port) rpc_port="$2"; shift 2;;
-        --zmq-port) zmq_port="$2"; shift 2;;
-        --stratum-port) stratum_port="$2"; shift 2;;
-        --daemon-host) daemon_host="$2"; shift 2;;
-        --address-type) address_type="$2"; shift 2;;
-        --getnewaddress-params) getnewaddress_params="$2"; shift 2;;
-        --rpc-wallet) rpc_wallet="$2"; shift 2;;
-        --mflex-enabled) mflex_enabled="true"; shift 1;;
-        -h|--help) usage; exit 0;;
-        *) die "Unknown argument: $1";;
-      esac
-    done
+  [ -n "${pool_id}" ] || die "--pool-id missing"
+  [ -n "${coin}" ] || die "--coin missing"
+  [ -n "${app_id}" ] || die "--app-id missing"
+  [ -n "${rpc_port}" ] || die "--rpc-port missing"
+  [ -n "${zmq_port}" ] || die "--zmq-port missing"
+  [ -n "${stratum_port}" ] || die "--stratum-port missing"
+  [ -n "${daemon_host}" ] || die "--daemon-host missing"
 
-    [ -n "${pool_id}" ] || die "--pool-id missing"
-    [ -n "${coin}" ] || die "--coin missing"
-    [ -n "${app_id}" ] || die "--app-id missing"
-    [ -n "${rpc_port}" ] || die "--rpc-port missing"
-    [ -n "${zmq_port}" ] || die "--zmq-port missing"
-    [ -n "${stratum_port}" ] || die "--stratum-port missing"
-    [ -n "${daemon_host}" ] || die "--daemon-host missing"
+  need curl
+  need python3
+  mkdir -p "${MC_HOME}" "${POOLS_DIR}"
 
-    mkdir -p "${MC_HOME}" "${POOLS_DIR}"
+  log "Waiting for RPC on ${RPC_HOST}:${rpc_port} ..."
+  wait_for_rpc "${rpc_port}" 120 || die "RPC not ready on port ${rpc_port}"
 
-    wait_for_rpc "${rpc_port}"
+  if [ -n "${rpc_wallet}" ]; then
     ensure_wallet_loaded "${rpc_port}" "${rpc_wallet}"
+  fi
 
-    addr="$(get_pool_address "${rpc_port}" "${rpc_wallet}" "${getnewaddress_params}")"
-    log "Pool address: ${addr}"
+  local out addr
+  out="$(rpc_call "${rpc_port}" getnewaddress "${getnewaddress_params}" "${rpc_wallet}")"
+  addr="$(echo "${out}" | rpc_result | tr -d '\r\n')"
+  [ -n "${addr}" ] && [ "${addr}" != "null" ] || die "getnewaddress failed: ${out}"
 
-    write_pool_json "${pool_id}" "${coin}" "${daemon_host}" "${rpc_port}" "${zmq_port}" "${stratum_port}" "${addr}" "${address_type}" "${mflex_enabled}" "${app_id}"
-    log "Wrote ${POOLS_DIR}/${pool_id}.json"
+  log "Pool address: ${addr}"
 
-    render_config
-    restart_miningcore
+  write_pool_fragment "${pool_id}" "${coin}" "${addr}" "${rpc_port}" "${zmq_port}" "${stratum_port}" "${daemon_host}" "${address_type}" "${mflex_enabled}" "${app_id}"
+  render_config
+  restart_miningcore
+}
 
-    log "Done."
-    ;;
+cmd_unregister() {
+  local pool_id=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --pool-id) pool_id="$2"; shift 2;;
+      *) die "Unknown arg: $1";;
+    esac
+  done
+  [ -n "${pool_id}" ] || die "--pool-id missing"
 
-  unregister)
-    pool_id=""
-    while [ "$#" -gt 0 ]; do
-      case "$1" in
-        --pool-id) pool_id="$2"; shift 2;;
-        -h|--help) usage; exit 0;;
-        *) die "Unknown argument: $1";;
-      esac
-    done
-    [ -n "${pool_id}" ] || die "--pool-id missing"
+  rm -f "${POOLS_DIR}/${pool_id}.json" || true
+  render_config
+  restart_miningcore
+}
 
-    rm -f "${POOLS_DIR}/${pool_id}.json" || true
-    render_config
-    restart_miningcore
-    log "Removed ${pool_id}"
-    ;;
+usage() {
+  cat <<EOF
+usage() {
+  cat <<EOF
+Usage:
+  pool-manager.sh register-bitcoin --pool-id <id> --coin <coinKey> --app-id <umbrelAppId> \\
+    --rpc-port <port> --zmq-port <port> --stratum-port <port> --daemon-host <docker-hostname> \\
+    [--address-type <bcash|bechsegwit|...>] \\
+    [--getnewaddress-params <json-array-string>] \\
+    [--rpc-wallet <walletname>] \\
+    [--mflex-enabled]
 
-  ""|-h|--help)
-    usage
-    ;;
+  pool-manager.sh unregister --pool-id <id>
+EOF
+}
 
-  *)
-    die "Unknown command: ${cmd}"
-    ;;
-esac
+main() {
+  local cmd="${1:-}"
+  shift || true
+  case "${cmd}" in
+    register-bitcoin) cmd_register_bitcoin "$@";;
+    unregister) cmd_unregister "$@";;
+    * ) usage; exit 1;;
+  esac
+}
+
+main "$@"
+EOF

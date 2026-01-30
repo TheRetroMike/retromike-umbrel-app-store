@@ -1,22 +1,40 @@
+manifestVersion: 1
 id: retro-mike-mflex-node
-name: MultiFlex Node
-version: 1.0.17-umbrel4
-tagline: MultiFlex Node for Umbrel with Miningcore integration
-description: >
-  MultiFlex full node for Umbrel.
-  Includes RPC + ZMQ defaults for Miningcore integration and automatic pool registration.
-developer: Aalnase
-website: https://github.com/Aalnase
-repo: https://github.com/Aalnase/retromike-umbrel-app-store
-support: https://github.com/Aalnase/retromike-umbrel-app-store/issues
+name: Multiflex (MFLEX) Node
+tagline: MFLEX full node (for MiningCore)
+icon: https://go-poolmining.com/img/icons/mflex.png
+category: Mining Nodes
+version: "2.0.0-umbrel1"
 port: 8570
-path: ""
+
+description: |
+  Multiflex (MFLEX) full node for Umbrel – intended to be used with RetroMike MiningCore.
+
+  Defaults:
+  - RPC: 9010 (user: pooluser / pass: poolpassword)
+  - ZMQ: 7010 (hashblock)
+  - P2P: 24200
+  - Prune: 550 MiB
+
+  This app auto-registers itself into MiningCore:
+  - creates/loads wallet "pool"
+  - generates a pool address
+  - writes ~/.miningcore/pools.d/mflex.json
+  - enables MFLEX-specific pool switch in MiningCore config
+
+developer: Multiflex
+website: https://github.com/Aalnase/multiflexcoin
+submitter: Aalnase
+submission: https://github.com/Aalnase/retromike-umbrel-app-store
+repo: https://github.com/Aalnase/multiflexcoin
+support: https://github.com/Aalnase/multiflexcoin/issues
+gallery: []
+releaseNotes: |
+  2026.01.24 - Auto wallet bootstrap + auto MiningCore pool registration; category fixed; dependencies restored.
+
 dependencies:
   - retro-mike-miningcore
-category: Blockchain
-icon: https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-mflex-node/logo.png
-gallery:
-  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-mflex-node/1.png
-  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-mflex-node/2.png
-releaseNotes: >
-  Fixes wallet/pool registration robustness and permissions on /home/umbrel/.miningcore.
+
+path: ""
+defaultUsername: ""
+defaultPassword: ""

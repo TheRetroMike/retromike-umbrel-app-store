@@ -1,23 +1,44 @@
+manifestVersion: 1.1.1
 id: retro-mike-miningcore
-name: Miningcore
-version: "1.3.0-mflex7-umbrel1"
-tagline: Miningcore Integration for Umbrel
-description: >
-  Miningcore is a high-performance mining pool server software for various
-  cryptocurrencies.
-developer: Miningcore Contributors
-website: https://github.com/Miningcore
-repo: https://github.com/Aalnase/retromike-umbrel-app-store
-support: https://github.com/Aalnase/retromike-umbrel-app-store/issues
+name: MiningCore
+tagline: MiningCore Mining Pool App
+icon: https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
+category: SOLO Crypto Mining
+version: "2.0.0-umbrel1"
 port: 8560
-path: ""
+description: |
+  MiningCore Mining Pool App (auto-configured). Note: Without this Fork Multiflex will not work!
+
+  This fork auto:
+  - Initializes the Postgres role/database/schema for MiningCore
+  - Maintains a central config at /home/umbrel/.miningcore
+  - Merges pool fragments from /home/umbrel/.miningcore/pools.d into config.json
+  - Appends a default pool fee (0.3%) via /home/umbrel/.miningcore/fees.json
+
+  Workflow on Umbrel:
+  1) Install Postgres
+  2) Install MiningCore
+  3) Install one or more coin node apps (each node auto-registers a pool entry)
+
+  You can change or remove the fee at any time by editing:
+  /home/umbrel/.miningcore/fees.json
+
+developer: Retro Mike (extended)
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://hub.docker.com/r/theretromike/miningcore
+repo: https://hub.docker.com/r/theretromike/miningcore
+support: https://hub.docker.com/r/theretromike/miningcore
+gallery:
+  - https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
+releaseNotes: |
+  2026.01.15 - Added Vertcoin Support
+  2026.01.11 - Fixed Coin Config Mapping (Needed for BC2)
+  2025.12.12 - Increased default stratum port to be 25 to allow for multiple coins
+  2025.11.30 - Initial Release
+
 dependencies:
   - retro-mike-postgres
-category: Developer Tools
-icon: https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-miningcore/logo.png
-gallery:
-  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-miningcore/1.png
-  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-miningcore/2.png
-  - https://raw.githubusercontent.com/Aalnase/retromike-umbrel-app-store/refs/heads/master/retro-mike-miningcore/3.png
-releaseNotes: >
-  Initial release with improved database setup and configuration management.
+path: ""
+defaultUsername: ""
+defaultPassword: ""
