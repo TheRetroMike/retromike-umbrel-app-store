@@ -1,7 +1,4 @@
-version: "3.7"
-
 services:
-
   app_proxy:
     environment:
       APP_HOST: retro-mike-mflex-node_web_1
@@ -17,47 +14,40 @@ services:
 
   node:
     image: ghcr.io/aalnase/mflex-node:1.11.0rc1-mflex2
-    restart: on-failure
-    stop_grace_period: 1m
+    restart: unless-stopped
+    ports:
+      - 7010:7010
+      - 9010:9010
+      - 24200:24200
+    entrypoint:
+      - multiflexd
+      - -printtoconsole
+      - -prune=550
+      - -server
+      - -rpcbind=0.0.0.0
+      - -rpcport=9010
+      - -rpcallowip=0.0.0.0/0
+      - -rpcuser=pooluser
+      - -rpcpassword=poolpassword
+      - -zmqpubhashblock=tcp://0.0.0.0:7010
+      - -zmqpubhashblockhwm=10000
+      - -addresstype=legacy
+      - -changetype=legacy
     volumes:
       - ${APP_DATA_DIR}/.multiflex:/root/.multiflex
       - /home/umbrel/.miningcore/wallet-backups:/backups
-    ports:
-      - 9010:9010    # RPC
-      - 7010:7010    # ZMQ
-      - 24200:24200  # P2P
-    entrypoint: "multiflexd -printtoconsole -server -prune=550 -rpcbind=0.0.0.0 -rpcport=9010 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword -wallet=pool -zmqpubhashblock=tcp://0.0.0.0:7010 -port=24200 -addresstype=legacy -changetype=legacy"
-  wallet_init:
-    image: curlimages/curl:8.6.0
-    restart: unless-stopped
-    depends_on:
-      - node
-    networks:
-      - default
-    volumes:
-      - ./scripts/wallet-init.sh:/wallet-init.sh:ro
-    environment:
-      RPC_HOST: node
-      RPC_PORT: "9010"
-      RPC_USER: pooluser
-      RPC_PASS: poolpassword
-      WALLET_NAME: pool
-      WAIT_SECS: "120"
-      SLEEP_SECS: "30"
-    command: ["sh","-lc","/wallet-init.sh"]
-
 
   wallet_autoload:
     image: curlimages/curl:8.6.0
+    entrypoint: ["/bin/sh", "/wallet-autoload.sh"]
     restart: unless-stopped
+    network_mode: service:node
     depends_on:
       - node
-    network_mode: "service:node"
     volumes:
       - ./scripts/wallet-autoload.sh:/wallet-autoload.sh:ro
-    entrypoint: ["/bin/sh","/wallet-autoload.sh"]
     environment:
+      RPC_USER: pooluser
+      RPC_PASSWORD: poolpassword
       RPC_PORT: "9010"
-      RPC_USER: "pooluser"
-      RPC_PASS: "poolpassword"
-      WALLET_NAME: "pool"
+      WALLET_NAME: pool

@@ -1,32 +1,16 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-PM="/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh"
+echo "== Auto-register MFLEX pool for MiningCore =="
 
-if [[ ! -x "$PM" ]]; then
-  echo "[mflex post-install] pool-manager not found at $PM; skipping auto-registration."
-  exit 0
-fi
-
-echo "[mflex post-install] Auto-registering MFLEX pool in MiningCore"
-
-CMD=(sudo "$PM" register-bitcoin
-  --pool-id mflex
-  --coin multiflex
-  --app-id retro-mike-mflex-node
-  --rpc-port 9010
-  --zmq-port 7010
-  --stratum-port 6010
-  --daemon-host retro-mike-mflex-node_node_1
-  --rpc-wallet pool
-  --getnewaddress-params '["","legacy"]'
-  --mflex-enabled
-)
-
-if ! "${CMD[@]}"; then
-  echo "[mflex post-install] WARN: auto-registration failed."
-  echo "[mflex post-install] You can retry manually with:"
-  printf '  %q' "${CMD[@]}"; echo
-fi
-
-echo "[mflex post-install] Done"
+/home/umbrel/umbrel/app-data/retro-mike-miningcore/scripts/pool-manager.sh register-bitcoin \
+  --pool-id mflex \
+  --coin multiflex \
+  --app-id retro-mike-mflex-node \
+  --rpc-port 9010 \
+  --zmq-port 7010 \
+  --stratum-port 6010 \
+  --daemon-host retro-mike-mflex-node_node_1 \
+  --rpc-wallet pool \
+  --getnewaddress-params '["","legacy"]' \
+  --mflex-enabled \
+  || echo "WARN: MFLEX pool auto-register failed (run pool-manager.sh manually)."

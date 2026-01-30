@@ -4,7 +4,7 @@ id: retro-mike-postgres
 name: PostgreSQL + pgAdmin
 tagline: PostgreSQL with a browser-based admin UI
 category: Databases
-version: "1.0.10"
+version: "2.0.0-umbrel1"
 port: 5050
 icon: https://raw.githubusercontent.com/TriLogic/umbrel-store/refs/heads/main/umbrel-store-postgre-pgadmin/icon.svg
 description: >-

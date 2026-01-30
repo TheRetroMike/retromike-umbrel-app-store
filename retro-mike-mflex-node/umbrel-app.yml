@@ -1,32 +1,40 @@
 manifestVersion: 1
 id: retro-mike-mflex-node
-name: MultiFlex (MFLEX) Node
-tagline: Full node and wallet for MultiFlex Coin
-icon: https://mfcoin.net/assets/images/MultiFlexCoin.png
+name: Multiflex (MFLEX) Node
+tagline: MFLEX full node (for MiningCore)
+icon: https://go-poolmining.com/img/icons/mflex.png
 category: Mining Nodes
-version: "1.0.17-umbrel3"
+version: "2.0.0-umbrel1"
 port: 8570
-description: >-
-  Full node and wallet for MultiFlex Coin.
 
-  On install this app will:
-  - create/load a dedicated wallet ("pool") if needed
-  - generate a **legacy** pool address
-  - register the MFLEX pool in the "MiningCore (MFLEX)" app automatically
+description: |
+  Multiflex (MFLEX) full node for Umbrel – intended to be used with RetroMike MiningCore.
 
-  The node itself starts WITHOUT -wallet on first boot (so fresh installs never crash because a wallet is missing).
-  As soon as the wallet exists, it will auto-load it on restarts.
+  Defaults:
+  - RPC: 9010 (user: pooluser / pass: poolpassword)
+  - ZMQ: 7010 (hashblock)
+  - P2P: 24200
+  - Prune: 550 MiB
 
-developer: MultiFlex
-website: https://mfcoin.net
+  This app auto-registers itself into MiningCore:
+  - creates/loads wallet "pool"
+  - generates a pool address
+  - writes ~/.miningcore/pools.d/mflex.json
+  - enables MFLEX-specific pool switch in MiningCore config
+
+developer: Multiflex
+website: https://github.com/Aalnase/multiflexcoin
 submitter: Aalnase
-submission: https://github.com/Aalnase/retromike-umbrel-app-store/pull/3
-repo: https://github.com/Aalnase/retromike-umbrel-app-store
-support: https://github.com/Aalnase/retromike-umbrel-app-store/issues
+submission: https://github.com/Aalnase/retromike-umbrel-app-store
+repo: https://github.com/Aalnase/multiflexcoin
+support: https://github.com/Aalnase/multiflexcoin/issues
 gallery: []
-releaseNotes: >-
-  - Fix: stable wallet creation/loading (legacy address enforced)
-  - Fix: MFLEX pool gets registered in MiningCore on first install reliably
+releaseNotes: |
+  2026.01.24 - Auto wallet bootstrap + auto MiningCore pool registration; category fixed; dependencies restored.
+
 dependencies:
   - retro-mike-miningcore
+
 path: ""
+defaultUsername: ""
+defaultPassword: ""
