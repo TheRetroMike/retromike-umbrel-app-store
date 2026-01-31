@@ -21,6 +21,7 @@ services:
       - 7010:7010
       - 9010:9010
       - 24200:24200
+<<<<<<< HEAD
     command: >
       multiflexd
       -printtoconsole
@@ -31,10 +32,14 @@ services:
       -rpcpassword=poolpassword
       -zmqpubhashblock=tcp://0.0.0.0:7010
       -prune=550
+=======
+    command: multiflexd -printtoconsole -prune=550
+>>>>>>> 1b136b9 (MFLEX like BCH: pool-manager creates/loads wallet + legacy address; renders config; starts miningcore; bump 2.0.0-umbrel1)
     volumes:
       - ${APP_DATA_DIR}/.multiflex:/root/.multiflex
       - /home/umbrel/.miningcore/wallet-backups:/backups
 
+<<<<<<< HEAD
   wallet_autoload:
     image: curlimages/curl:8.6.0
     entrypoint: /entrypoint.sh
@@ -50,3 +55,5 @@ services:
       RPC_PASSWORD: poolpassword
       RPC_PORT: "9010"
       WALLET_NAME: pool
+=======
+>>>>>>> 1b136b9 (MFLEX like BCH: pool-manager creates/loads wallet + legacy address; renders config; starts miningcore; bump 2.0.0-umbrel1)
