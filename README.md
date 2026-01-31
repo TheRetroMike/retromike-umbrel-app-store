@@ -1,6 +1,6 @@
 ## Umbrel Community App Store Template
 
-This repository is a template to create an Umbrel Community App Store. These additional app stores allow developers to distribute applications without submitting to the [Official Umbrel App Store](https://github.com/getumbrel/umbrel-apps).
+This repository is necessary if you want to mine the Multiflex coin using RetroMike's Umbrella Store. This repository is a template to create an Umbrel Community App Store. These additional app stores allow developers to distribute applications without submitting to the [Official Umbrel App Store](https://github.com/getumbrel/umbrel-apps).
 
 ## How to use:
 
