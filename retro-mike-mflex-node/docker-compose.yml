@@ -1,0 +1,58 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: retro-mike-mflex-node_web_1
+      APP_PORT: 8080
+
+  web:
+    image: amir20/dozzle:v8.12.8
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: on-failure
+    depends_on:
+      - node
+
+  node:
+    image: ghcr.io/aalnase/mflex-node:1.11.0rc1-mflex2
+    restart: unless-stopped
+    stop_grace_period: 1m
+    volumes:
+      - ${APP_DATA_DIR}/.multiflex:/root/.multiflex
+      - /home/umbrel/.miningcore/wallet-backups:/backups
+    ports:
+      - "9010:9010"    # RPC
+      - "7010:7010"    # ZMQ
+      - "24200:24200"  # P2P
+    command:
+      - multiflexd
+      - -printtoconsole
+      - -server
+      - -prune=550
+      - -rpcbind=0.0.0.0
+      - -rpcallowip=0.0.0.0/0
+      - -rpcport=9010
+      - -rpcuser=pooluser
+      - -rpcpassword=poolpassword
+      - -zmqpubhashblock=tcp://0.0.0.0:7010
+      - -port=24200
+      - -addresstype=legacy
+      - -changetype=legacy
+
+  wallet_autoload:
+    image: curlimages/curl:8.6.0
+    restart: unless-stopped
+    depends_on:
+      - node
+    network_mode: "service:node"
+    volumes:
+      - ./scripts/wallet-autoload.sh:/wallet-autoload.sh:ro
+    entrypoint: ["sh","/wallet-autoload.sh"]
+    environment:
+      RPC_PORT: "9010"
+      RPC_USER: "pooluser"
+      RPC_PASS: "poolpassword"
+      WALLET_NAME: "pool"
+      WAIT_SECS: "180"
+      SLEEP_SECS: "30"
