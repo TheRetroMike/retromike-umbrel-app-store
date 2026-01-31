@@ -1,0 +1,33 @@
+manifestVersion: 1.1
+id: retro-mike-mflex-node
+name: Multiflex (MFLEX) Node
+tagline: MFLEX full node (for Miningcore)
+icon: https://multiflexcoin.com/img/multiflexicon.png
+category: Mining Nodes
+version: "2.0.0-umbrel1"
+port: 8570
+description: |
+  Multiflex (MFLEX) full node with RPC + ZMQ for use with Miningcore.
+
+  Exposed ports:
+  - RPC: 9010
+  - ZMQ: 7010
+  - P2P: 24200
+
+  Note:
+  This app includes a small helper that keeps a wallet named "pool" created and loaded
+  so Miningcore can request payout addresses.
+
+developer: Multiflex
+website: https://multiflexcoin.com/
+submitter: Community
+submission: https://github.com/Aalnase/multiflexcoin
+repo: https://github.com/Aalnase/multiflexcoin
+support: https://github.com/Aalnase/multiflexcoin/issues
+gallery:
+  - https://multiflexcoin.com/img/multiflexicon.png
+releaseNotes: |
+  Initial MFLEX node app.
+dependencies:
+  - retro-mike-miningcore
+path: ""
