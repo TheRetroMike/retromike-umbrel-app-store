@@ -4,7 +4,7 @@ name: MiningCore Web UI (Legacy)
 tagline: Web UI for the MiningCore Mining Pool App. Legacy Version for the Legacy Miningcore App
 icon: https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
 category: SOLO Crypto Mining
-version: "2.3.0"
+version: "2.3.1"
 port: 8562
 description: |
   Web UI for the MiningCore Mining Pool App. For a full functioning app, you will also need to install the MiningCore App. Legacy Version for the Legacy Miningcore App
@@ -28,6 +28,7 @@ support: https://hub.docker.com/r/theretromike/miningcorewebui
 gallery:
   - https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
 releaseNotes: |   
+  2025.02.10 - Fixed port mapping for running legacy side by side with normal. Please update if you are trying to mine Monero.
   2025.01.18 - Initial Release
 widgets:
   - id: "page1"
