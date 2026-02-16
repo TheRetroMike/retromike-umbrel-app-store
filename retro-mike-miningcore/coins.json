@@ -1502,7 +1502,7 @@
                 }
             ]
         },
-        "shareMultiplier": 4096,
+		"shareMultiplier": 256,
         "explorerBlockLink": "https://groestlsight.groestlcoin.org/block/$height$",
         "explorerTxLink": "https://groestlsight.groestlcoin.org/tx/{0}",
         "explorerAccountLink": "https://groestlsight.groestlcoin.org/address/{0}"
