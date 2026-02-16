@@ -1,0 +1,43 @@
+## ──────────────────────────────────────────────────────────────────────────────
+## Stage 1: Build the merged-mining-pool Go binary
+## ──────────────────────────────────────────────────────────────────────────────
+FROM golang:1.22-bookworm AS builder
+
+RUN apt-get update && apt-get install -y git
+
+WORKDIR /build
+RUN git clone https://github.com/dreams-money/merged-mining-pool.git .
+RUN go mod download
+RUN CGO_ENABLED=0 go build -o /merged-mining-pool .
+
+## ──────────────────────────────────────────────────────────────────────────────
+## Stage 2: Runtime image
+## ──────────────────────────────────────────────────────────────────────────────
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    jq \
+    nginx \
+    supervisor \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy pool binary
+COPY --from=builder /merged-mining-pool /usr/local/bin/merged-mining-pool
+COPY --from=builder /build/persistence/schemas /opt/pool/schemas
+
+# Copy config and scripts
+COPY entrypoint.sh /entrypoint.sh
+COPY pool-config.json.template /opt/pool/config.template.json
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY nginx.conf /etc/nginx/sites-available/default
+COPY dashboard/ /var/www/html/
+
+RUN chmod +x /entrypoint.sh
+RUN mkdir -p /var/log/pool /data
+
+EXPOSE 80 3333
+
+ENTRYPOINT ["/entrypoint.sh"]

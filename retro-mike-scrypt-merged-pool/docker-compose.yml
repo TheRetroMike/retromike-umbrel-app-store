@@ -1,0 +1,145 @@
+version: "3.7"
+
+services:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Litecoin Core Full Node
+  # ═══════════════════════════════════════════════════════════════════════════
+  litecoind:
+    image: uphold/litecoin-core:0.21.3
+    restart: on-failure
+    stop_grace_period: 5m
+    volumes:
+      - ${APP_DATA_DIR}/data/litecoin:/var/lib/litecoin
+    command:
+      - -printtoconsole
+      - -server=1
+      - -rpcuser=${LTC_RPC_USER:-umbrelltc}
+      - -rpcpassword=${LTC_RPC_PASS:-ltcpass12345}
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -rpcport=9332
+      - -port=9333
+      - -txindex=1
+      - -zmqpubhashblock=tcp://0.0.0.0:28332
+      - -zmqpubrawtx=tcp://0.0.0.0:28333
+      # MWEB support (required for modern Litecoin)
+      - -mweb=1
+    ports:
+      - "9333:9333"   # P2P (so external peers can connect)
+    networks:
+      default:
+        ipv4_address: ${APP_LTC_DOGE_MINING_LTC_IP:-10.21.101.10}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Dogecoin Core Full Node
+  # ═══════════════════════════════════════════════════════════════════════════
+  dogecoind:
+    image: casperstack/dogecoin:1.14.7
+    restart: on-failure
+    stop_grace_period: 5m
+    volumes:
+      - ${APP_DATA_DIR}/data/dogecoin:/home/dogecoin/.dogecoin
+    command:
+      - dogecoind
+      - -printtoconsole
+      - -server=1
+      - -rpcuser=${DOGE_RPC_USER:-umbreldoge}
+      - -rpcpassword=${DOGE_RPC_PASS:-dogepass12345}
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -rpcport=22555
+      - -port=22556
+      - -txindex=1
+      - -zmqpubhashblock=tcp://0.0.0.0:28334
+      - -zmqpubrawtx=tcp://0.0.0.0:28335
+    ports:
+      - "22556:22556" # P2P
+    networks:
+      default:
+        ipv4_address: ${APP_LTC_DOGE_MINING_DOGE_IP:-10.21.101.11}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # PostgreSQL Database
+  # ═══════════════════════════════════════════════════════════════════════════
+  postgres:
+    image: postgres:16-bookworm
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "${DB_USER:-pooluser}"
+      POSTGRES_PASSWORD: "${DB_PASS:-poolpass12345}"
+      POSTGRES_DB: "${DB_NAME:-miningpool}"
+    networks:
+      default:
+        ipv4_address: ${APP_LTC_DOGE_MINING_DB_IP:-10.21.101.12}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Merged Mining Pool (Stratum + Web Dashboard)
+  # ═══════════════════════════════════════════════════════════════════════════
+  pool:
+    build:
+      context: .
+      dockerfile: Dockerfile.pool
+    restart: on-failure
+    stop_grace_period: 30s
+    depends_on:
+      - litecoind
+      - dogecoind
+      - postgres
+    volumes:
+      - ${APP_DATA_DIR}/data/pool:/data
+      - ${APP_DATA_DIR}/data/pool-logs:/var/log/pool
+    environment:
+      # Litecoin RPC
+      LTC_RPC_HOST: "${APP_LTC_DOGE_MINING_LTC_IP:-10.21.101.10}"
+      LTC_RPC_PORT: "9332"
+      LTC_RPC_USER: "${LTC_RPC_USER:-umbrelltc}"
+      LTC_RPC_PASS: "${LTC_RPC_PASS:-ltcpass12345}"
+      LTC_ZMQ_HOST: "${APP_LTC_DOGE_MINING_LTC_IP:-10.21.101.10}"
+      LTC_ZMQ_PORT: "28332"
+      # Dogecoin RPC
+      DOGE_RPC_HOST: "${APP_LTC_DOGE_MINING_DOGE_IP:-10.21.101.11}"
+      DOGE_RPC_PORT: "22555"
+      DOGE_RPC_USER: "${DOGE_RPC_USER:-umbreldoge}"
+      DOGE_RPC_PASS: "${DOGE_RPC_PASS:-dogepass12345}"
+      DOGE_ZMQ_HOST: "${APP_LTC_DOGE_MINING_DOGE_IP:-10.21.101.11}"
+      DOGE_ZMQ_PORT: "28334"
+      # Database
+      DB_HOST: "${APP_LTC_DOGE_MINING_DB_IP:-10.21.101.12}"
+      DB_USER: "${DB_USER:-pooluser}"
+      DB_PASS: "${DB_PASS:-poolpass12345}"
+      DB_NAME: "${DB_NAME:-miningpool}"
+      # Pool settings
+      POOL_NAME: "${POOL_NAME:-Umbrel LTC+DOGE Pool}"
+      STRATUM_HOST: "${DEVICE_DOMAIN_NAME:-umbrel.local}"
+      LTC_POOL_ADDRESS: "${LTC_POOL_ADDRESS:-YOUR_LTC_ADDRESS_HERE}"
+      DOGE_POOL_ADDRESS: "${DOGE_POOL_ADDRESS:-YOUR_DOGE_ADDRESS_HERE}"
+    ports:
+      # Web dashboard
+      - "${APP_LTC_DOGE_MINING_WEB_PORT:-8891}:80"
+      # Stratum port (miners connect here)
+      - "3333:3333"
+    networks:
+      default:
+        ipv4_address: ${APP_LTC_DOGE_MINING_POOL_IP:-10.21.101.13}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Umbrel App Proxy
+  # ═══════════════════════════════════════════════════════════════════════════
+  app_proxy:
+    environment:
+      APP_HOST: ${APP_LTC_DOGE_MINING_POOL_IP:-10.21.101.13}
+      APP_PORT: 80
+    image: getumbrel/app-proxy:v1.1.0@sha256:6e90fafb5d6e28cdf4e5a1b18be553b9572bfcb4c11ed7c6e1e4b153e0b9bf16
+    restart: on-failure
+    networks:
+      default:
+        ipv4_address: ${APP_LTC_DOGE_MINING_PROXY_IP:-10.21.101.14}
+
+networks:
+  default:
+    name: ltc-doge-merged-mining_default
+    ipam:
+      config:
+        - subnet: 10.21.101.0/24

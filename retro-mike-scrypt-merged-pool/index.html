@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTC + DOGE Merged Mining Pool</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f1117;
+            color: #e1e4e8;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #21262d;
+        }
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #c0c0c0, #f7931a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+        }
+        header p { color: #8b949e; font-size: 0.95rem; }
+        .coins {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        .coin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .coin-ltc { background: rgba(52,93,207,0.15); color: #6b9fff; border: 1px solid rgba(52,93,207,0.3); }
+        .coin-doge { background: rgba(195,161,52,0.15); color: #e8c94a; border: 1px solid rgba(195,161,52,0.3); }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .card h2 {
+            font-size: 1rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+        .stat { text-align: center; }
+        .stat .value { font-size: 1.5rem; font-weight: 700; color: #f0f3f6; }
+        .stat .label { font-size: 0.8rem; color: #8b949e; margin-top: 0.2rem; }
+
+        .connect-box {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.8rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #7ee787;
+            word-break: break-all;
+            position: relative;
+        }
+        .connect-box .label-tag {
+            position: absolute;
+            top: -0.6rem;
+            left: 0.8rem;
+            background: #161b22;
+            padding: 0 0.4rem;
+            font-size: 0.7rem;
+            color: #8b949e;
+            font-family: -apple-system, sans-serif;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #21262d;
+            font-size: 0.9rem;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row .key { color: #8b949e; }
+        .info-row .val { color: #e1e4e8; font-weight: 500; }
+        .status-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin-right: 0.4rem;
+        }
+        .status-ok { background: #3fb950; box-shadow: 0 0 6px rgba(63,185,80,0.4); }
+        .status-warn { background: #d29922; box-shadow: 0 0 6px rgba(210,153,34,0.4); }
+        .status-err { background: #f85149; box-shadow: 0 0 6px rgba(248,81,73,0.4); }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #21262d;
+            color: #484f58;
+            font-size: 0.8rem;
+        }
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="pool-name">LTC + DOGE Merged Mining Pool</h1>
+            <p>Self-hosted on Umbrel OS</p>
+            <div class="coins">
+                <span class="coin-badge coin-ltc">⛏ Litecoin</span>
+                <span class="coin-badge coin-doge">🐕 Dogecoin</span>
+            </div>
+        </header>
+
+        <!-- Pool Status -->
+        <div class="card">
+            <h2>Pool Status</h2>
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="value" id="pool-hashrate">—</div>
+                    <div class="label">Pool Hashrate</div>
+                </div>
+                <div class="stat">
+                    <div class="value" id="active-miners">—</div>
+                    <div class="label">Active Miners</div>
+                </div>
+                <div class="stat">
+                    <div class="value" id="ltc-blocks">—</div>
+                    <div class="label">LTC Blocks Found</div>
+                </div>
+                <div class="stat">
+                    <div class="value" id="doge-blocks">—</div>
+                    <div class="label">DOGE Blocks Found</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Info -->
+        <div class="card">
+            <h2>Network</h2>
+            <div class="info-row">
+                <span class="key">Litecoin Node</span>
+                <span class="val" id="ltc-status"><span class="status-dot status-warn"></span>Checking...</span>
+            </div>
+            <div class="info-row">
+                <span class="key">LTC Block Height</span>
+                <span class="val" id="ltc-height">—</span>
+            </div>
+            <div class="info-row">
+                <span class="key">Dogecoin Node</span>
+                <span class="val" id="doge-status"><span class="status-dot status-warn"></span>Checking...</span>
+            </div>
+            <div class="info-row">
+                <span class="key">DOGE Block Height</span>
+                <span class="val" id="doge-height">—</span>
+            </div>
+        </div>
+
+        <!-- Connect -->
+        <div class="card">
+            <h2>Connect Your Miner</h2>
+            <p style="color:#8b949e; font-size:0.9rem; margin-bottom:1rem;">
+                Point your Scrypt ASIC (Antminer L7/L9, Goldshell, etc.) to this pool.
+            </p>
+
+            <div class="connect-box">
+                <span class="label-tag">Stratum URL</span>
+                stratum+tcp://<span id="stratum-host">your-umbrel-ip</span>:3333
+            </div>
+
+            <div class="connect-box" style="margin-top:1rem;">
+                <span class="label-tag">Username</span>
+                YOUR_LTC_ADDRESS-YOUR_DOGE_ADDRESS.worker1
+            </div>
+
+            <div class="connect-box" style="margin-top:1rem;">
+                <span class="label-tag">Password</span>
+                x
+            </div>
+
+            <div style="margin-top:1rem; padding:1rem; background:rgba(210,153,34,0.08); border:1px solid rgba(210,153,34,0.2); border-radius:8px; font-size:0.85rem; color:#d29922;">
+                <strong>Format:</strong> Use your LTC address, a dash, then your DOGE address, a dot, then a worker name.<br>
+                <strong>Example:</strong> <code style="color:#7ee787;">LgETtY...PtzhC-DH5ya...29dmk.rig1</code>
+            </div>
+        </div>
+
+        <!-- Rewards Info -->
+        <div class="card">
+            <h2>Current Block Rewards</h2>
+            <div class="info-row">
+                <span class="key">Litecoin Block Reward</span>
+                <span class="val">6.25 LTC</span>
+            </div>
+            <div class="info-row">
+                <span class="key">Dogecoin Block Reward</span>
+                <span class="val">10,000 DOGE</span>
+            </div>
+            <div class="info-row">
+                <span class="key">LTC Block Time</span>
+                <span class="val">~2.5 min</span>
+            </div>
+            <div class="info-row">
+                <span class="key">DOGE Block Time</span>
+                <span class="val">~1 min</span>
+            </div>
+            <div class="info-row">
+                <span class="key">Algorithm</span>
+                <span class="val">Scrypt</span>
+            </div>
+        </div>
+
+        <footer>
+            Powered by <a href="https://github.com/dreams-money/merged-mining-pool" style="color:#58a6ff;">merged-mining-pool</a>
+            &middot; Running on <a href="https://umbrel.com" style="color:#58a6ff;">Umbrel OS</a>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        const cfg = window.POOL_CONFIG || {};
+        if (cfg.poolName) document.getElementById('pool-name').textContent = cfg.poolName;
+        if (cfg.stratumHost) document.getElementById('stratum-host').textContent = cfg.stratumHost;
+
+        async function fetchStats() {
+            try {
+                const r = await fetch('/api/stats');
+                if (!r.ok) throw new Error('API unavailable');
+                const d = await r.json();
+                if (d.hashrate) document.getElementById('pool-hashrate').textContent = formatHashrate(d.hashrate);
+                if (d.miners !== undefined) document.getElementById('active-miners').textContent = d.miners;
+                if (d.blocksLTC !== undefined) document.getElementById('ltc-blocks').textContent = d.blocksLTC;
+                if (d.blocksDOGE !== undefined) document.getElementById('doge-blocks').textContent = d.blocksDOGE;
+                if (d.ltcHeight) document.getElementById('ltc-height').textContent = d.ltcHeight.toLocaleString();
+                if (d.dogeHeight) document.getElementById('doge-height').textContent = d.dogeHeight.toLocaleString();
+
+                setStatus('ltc-status', d.ltcConnected);
+                setStatus('doge-status', d.dogeConnected);
+            } catch (e) {
+                // Pool API not available yet
+                console.log('Waiting for pool API...', e.message);
+            }
+        }
+
+        function setStatus(id, connected) {
+            const el = document.getElementById(id);
+            if (connected) {
+                el.innerHTML = '<span class="status-dot status-ok"></span>Connected';
+            } else if (connected === false) {
+                el.innerHTML = '<span class="status-dot status-err"></span>Disconnected';
+            }
+        }
+
+        function formatHashrate(h) {
+            if (h >= 1e12) return (h / 1e12).toFixed(2) + ' TH/s';
+            if (h >= 1e9) return (h / 1e9).toFixed(2) + ' GH/s';
+            if (h >= 1e6) return (h / 1e6).toFixed(2) + ' MH/s';
+            if (h >= 1e3) return (h / 1e3).toFixed(2) + ' KH/s';
+            return h + ' H/s';
+        }
+
+        fetchStats();
+        setInterval(fetchStats, 15000);
+    </script>
+</body>
+</html>

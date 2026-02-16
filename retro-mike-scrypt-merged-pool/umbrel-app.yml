@@ -1,0 +1,41 @@
+manifestVersion: 1
+id: retro-mike-scrypt-merged-pool
+name: LTC+DOGE Merged Mining Pool
+tagline: Self-hosted Litecoin & Dogecoin merged mining pool
+icon: https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Dogecoin_Logo.svg/200px-Dogecoin_Logo.svg.png
+category: bitcoin
+version: "1.0.0"
+port: 8891
+description: >-
+  Run your own self-hosted Litecoin + Dogecoin merged mining pool on Umbrel OS.
+  Merged mining allows you to mine both LTC and DOGE simultaneously using the
+  same Scrypt hashpower — one effort, two rewards.
+
+  This package includes everything you need: Litecoin Core node, Dogecoin Core
+  node, a high-performance merged mining stratum server (from dreams-money),
+  PostgreSQL database, and a web dashboard.
+
+  Point your Scrypt ASIC miners (Antminer L7/L9, Goldshell, etc.) at your
+  Umbrel server and earn both LTC and DOGE from every hash.
+
+  Features: Full merged mining (AuxPoW), Stratum server with 1000+ client
+  support, ZMQ real-time block notifications, automatic payouts, PostgreSQL
+  backed statistics, and a simple web status page.
+
+  WARNING: Solo mining LTC/DOGE requires significant hashpower. With a small
+  miner this is effectively lottery mining. Consider this for learning,
+  privacy, or supporting the networks.
+developer: dreams-money (packaged for Umbrel)
+website: https://github.com/dreams-money/merged-mining-pool
+repo: https://github.com/dreams-money/merged-mining-pool
+support: https://github.com/dreams-money/merged-mining-pool/discussions
+gallery:
+  - ""
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  Initial release of LTC+DOGE Merged Mining Pool for Umbrel OS.
+dependencies: []
+submitter: Community
+submission: ""

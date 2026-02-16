@@ -1,0 +1,62 @@
+{
+  "stratum": {
+    "port": 3333,
+    "difficulty": 512,
+    "maxConnections": 1000
+  },
+  "primary": {
+    "coin": "litecoin",
+    "symbol": "LTC",
+    "rpc": [
+      {
+        "host": "${LTC_RPC_HOST}",
+        "port": ${LTC_RPC_PORT},
+        "user": "${LTC_RPC_USER}",
+        "password": "${LTC_RPC_PASS}"
+      }
+    ],
+    "zmq": {
+      "hashblock": "tcp://${LTC_ZMQ_HOST}:${LTC_ZMQ_PORT}"
+    },
+    "address": "${LTC_POOL_ADDRESS}",
+    "blockReward": 6.25,
+    "txFeeReserve": 0.001
+  },
+  "auxiliaries": [
+    {
+      "coin": "dogecoin",
+      "symbol": "DOGE",
+      "rpc": [
+        {
+          "host": "${DOGE_RPC_HOST}",
+          "port": ${DOGE_RPC_PORT},
+          "user": "${DOGE_RPC_USER}",
+          "password": "${DOGE_RPC_PASS}"
+        }
+      ],
+      "zmq": {
+        "hashblock": "tcp://${DOGE_ZMQ_HOST}:${DOGE_ZMQ_PORT}"
+      },
+      "address": "${DOGE_POOL_ADDRESS}",
+      "blockReward": 10000
+    }
+  ],
+  "database": {
+    "host": "${DB_HOST}",
+    "port": 5432,
+    "user": "${DB_USER}",
+    "password": "${DB_PASS}",
+    "name": "${DB_NAME}"
+  },
+  "api": {
+    "port": 8080
+  },
+  "payouts": {
+    "enabled": true,
+    "interval": 3600,
+    "minPayout": {
+      "LTC": 0.01,
+      "DOGE": 50
+    }
+  }
+}
