@@ -4,7 +4,7 @@ name: MiningCore (Legacy)
 tagline: MiningCore Mining Pool App - Legacy Version
 icon: https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
 category: SOLO Crypto Mining
-version: "1.0.0"
+version: "1.1.0"
 port: 8561
 description: |
   MiningCore Mining Pool App. Legacy Version. Retained for Monero Support. For a full functioning app, you will also need to install one or more nodes and configure the Pool Config JSON file manually by SSHing into your Umbrel server.
@@ -28,6 +28,7 @@ support: https://hub.docker.com/r/theretromike/miningcore
 gallery:
   - https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
 releaseNotes: |
+  2025.02.25 - Added NerdMiner and High Hashrate Support for SHA256
   2025.01.18 - Initial Release
 dependencies: []
 path: ""

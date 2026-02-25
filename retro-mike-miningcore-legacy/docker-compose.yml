@@ -16,6 +16,9 @@ services:
       - /home/umbrel/umbrel/app-data/retro-mike-vtc-node/.vertcoin:/.vertcoin
     ports:
       - 6101-6125:6101-6125
+      - 6501-6525:6501-6525
+      - 6601-6625:6601-6625
+      - 6701-6725:6701-6725
       - 4001:4001
   web:
     image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1
