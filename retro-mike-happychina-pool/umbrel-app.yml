@@ -1,0 +1,60 @@
+manifestVersion: 1
+id: retro-mike-happychina-pool
+name: HappyChina Mining Pool
+tagline: Multi-coin Scrypt mining pool with merge mining - mine 9 coins at once
+icon: https://raw.githubusercontent.com/bobparkerbob888-tech/happychina-pool-umbrel/main/happychina-pool/icon.png
+category: bitcoin
+version: "2.2.0"
+port: 8080
+description: >-
+  A complete Scrypt mining pool for your Umbrel server.
+  Features a Node.js stratum server with merge mining,
+  a modern React dashboard and admin panel.
+
+  🚀 GETTING STARTED:
+  1. Open the app after installation
+  2. Click "Register" to create your account
+  3. The FIRST account registered automatically becomes the admin
+  4. Set your wallet addresses in your profile settings
+  5. Connect your miners and start mining!
+
+  Supported coins (9 total, all Scrypt):
+  - Litecoin (LTC) - Primary
+  - Dogecoin (DOGE) - Merge-mined with LTC
+  - Pepecoin (PEPE) - Merge-mined with LTC
+  - Bells (BELLS) - Merge-mined with LTC
+  - Luckycoin (LKY) - Merge-mined with LTC
+  - Junkcoin (JKC) - Merge-mined with LTC
+  - Dingocoin (DINGO) - Merge-mined with LTC
+  - Shibacoin (SHIC) - Merge-mined with LTC
+  - TrumPOW (TRMP) - Merge-mined with LTC
+
+  Connect your Scrypt miners:
+  stratum+tcp://YOUR_UMBREL_IP:3333
+
+  Use your wallet address as the username when connecting miners.
+
+  ⚙️ COINS ARE DISABLED BY DEFAULT - No blockchain daemons start
+  on install. Enable coins one at a time from Admin → Coins.
+  Each coin downloads its daemon image when first enabled.
+
+  🔄 RESET: Use Admin → Coins → Reset All to disable all coins
+  and stop all daemons. Settings persist across reinstalls.
+
+developer: HappyChina
+website: https://github.com/bobparkerbob888-tech/happychina-pool-umbrel
+submitter: HappyChina
+submission: https://github.com/bobparkerbob888-tech/happychina-pool-umbrel
+repo: https://github.com/bobparkerbob888-tech/happychina-pool-umbrel
+support: https://github.com/bobparkerbob888-tech/happychina-pool-umbrel/issues
+gallery:
+  - https://raw.githubusercontent.com/bobparkerbob888-tech/happychina-pool-umbrel/main/happychina-pool/icon.png
+releaseNotes: >-
+  v2.2.0 - Coins disabled by default, enable from admin panel.
+  Daemons start/stop automatically when you enable/disable coins.
+  Reset All button to restore defaults. Zero bandwidth on install.
+dependencies: []
+permissions: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

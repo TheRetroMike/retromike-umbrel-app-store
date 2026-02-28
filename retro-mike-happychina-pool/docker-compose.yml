@@ -1,0 +1,108 @@
+services:
+  # === App Proxy (Umbrel integration) ===
+  app_proxy:
+    image: getumbrel/app-proxy:1.0.0
+    restart: on-failure
+    environment:
+      APP_HOST: frontend
+      APP_PORT: '80'
+      PROXY_AUTH_ADD: 'false'
+    volumes:
+      - ${APP_DATA_DIR:-.}/umbrel-app.yml:/extra/umbrel-app.yml:ro
+
+  # === Backend API (Node.js + SQLite) ===
+  # Coin daemon containers are created dynamically by the backend
+  # when admin enables a coin (via Docker socket API)
+  backend:
+    image: ghcr.io/bobparkerbob888-tech/happychina-pool-backend:2.1.0
+    restart: on-failure
+    environment:
+      PORT: '8080'
+      HOST: '0.0.0.0'
+      JWT_SECRET: 2f82d4c6cd23dd16b31dca1b802c4cf569a419a84442e323160294dfca63f856
+      POOL_NAME: 'HappyChina Pool'
+      POOL_FEE: '1.0'
+      DB_PATH: /app/data/pool.db
+      DOCKER_PROJECT: happychina-pool
+      LTC_RPC_HOST: litecoind
+      LTC_RPC_PORT: '9332'
+      LTC_RPC_USER: umbrel
+      LTC_RPC_PASS: umbrel
+      DOGE_RPC_HOST: dogecoind
+      DOGE_RPC_PORT: '22555'
+      DOGE_RPC_USER: umbrel
+      DOGE_RPC_PASS: umbrel
+      PEPE_RPC_HOST: pepecoind
+      PEPE_RPC_PORT: '29373'
+      PEPE_RPC_USER: umbrel
+      PEPE_RPC_PASS: umbrel
+      BELLS_RPC_HOST: bellsd
+      BELLS_RPC_PORT: '19918'
+      BELLS_RPC_USER: umbrel
+      BELLS_RPC_PASS: umbrel
+      LKY_RPC_HOST: luckycoind
+      LKY_RPC_PORT: '9918'
+      LKY_RPC_USER: umbrel
+      LKY_RPC_PASS: umbrel
+      JKC_RPC_HOST: junkcoind
+      JKC_RPC_PORT: '9772'
+      JKC_RPC_USER: umbrel
+      JKC_RPC_PASS: umbrel
+      DINGO_RPC_HOST: dingocoind
+      DINGO_RPC_PORT: '34646'
+      DINGO_RPC_USER: umbrel
+      DINGO_RPC_PASS: umbrel
+      SHIC_RPC_HOST: shibacoind
+      SHIC_RPC_PORT: '33863'
+      SHIC_RPC_USER: umbrel
+      SHIC_RPC_PASS: umbrel
+      TRMP_RPC_HOST: trumpowd
+      TRMP_RPC_PORT: '33883'
+      TRMP_RPC_USER: umbrel
+      TRMP_RPC_PASS: umbrel
+    volumes:
+      - pool-data:/app/data
+      - frontend-build:/frontend/build:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_DATA_DIR:-.}/coins.js:/app/src/config/coins.js:ro
+      - ${APP_DATA_DIR:-.}/server.js:/app/src/stratum/server.js:ro
+      - ${APP_DATA_DIR:-.}/daemonRPC.js:/app/src/services/daemonRPC.js:ro
+      - ${APP_DATA_DIR:-.}/blockMonitor.js:/app/src/services/blockMonitor.js:ro
+      - ${APP_DATA_DIR:-.}/shareProcessor.js:/app/src/services/shareProcessor.js:ro
+      - ${APP_DATA_DIR:-.}/paymentProcessor.js:/app/src/services/paymentProcessor.js:ro
+      - ${APP_DATA_DIR:-.}/index.js:/app/src/index.js:ro
+      - ${APP_DATA_DIR:-.}/utcTimestamps.js:/app/src/middleware/utcTimestamps.js:ro
+      - ${APP_DATA_DIR:-.}/admin.js:/app/src/api/routes/admin.js:ro
+      - ${APP_DATA_DIR:-.}/dockerControl.js:/app/src/services/dockerControl.js:ro
+    ports:
+      - '3332-3344:3332-3344'
+    expose:
+      - '8080'
+    depends_on:
+      init:
+        condition: service_completed_successfully
+
+  # === Init: copy frontend build files ===
+  init:
+    image: ghcr.io/bobparkerbob888-tech/happychina-pool-frontend:2.1.0
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Copying frontend build files..."
+        cp -r /usr/share/nginx/html/* /frontend-build/
+        echo "Init complete."
+    volumes:
+      - frontend-build:/frontend-build
+
+  # === Frontend (React + Nginx) ===
+  frontend:
+    image: ghcr.io/bobparkerbob888-tech/happychina-pool-frontend:2.1.0
+    restart: on-failure
+    depends_on:
+      - backend
+    expose:
+      - '80'
+
+volumes:
+  pool-data:
+  frontend-build:
