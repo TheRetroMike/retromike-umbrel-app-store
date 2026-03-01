@@ -349,6 +349,35 @@
         "explorerTxLink": "https://www.blockchain.com/btc/tx/{0}",
         "explorerAccountLink": "https://www.blockchain.com/btc/address/{0}"
     },
+    "bitcoin-silver": {
+        "name": "Bitcoin Silver",
+        "canonicalName": "Bitcoin-Silver",
+        "symbol": "BTCS",
+        "family": "bitcoin",
+        "website": "https://www.bitcoinsilver.top/",
+        "market": "https://coinpaprika.com/coin/btcs-bitcoin-scrypt",
+        "twitter": "https://x.com/Official_BTCS",
+        "telegram": "",
+        "discord": "",
+        "coinbaseHasher": {
+            "hash": "sha256d"
+        },
+        "headerHasher": {
+            "hash": "sha256d"
+        },
+        "blockHasher": {
+            "hash": "reverse",
+            "args": [
+                {
+                    "hash": "sha256d"
+                }
+            ]
+        },
+        "coinbaseIgnoreAuxFlags": true,
+        "explorerBlockLink": "https://explorer.bitcoinsilver.top/block/$hash$",
+        "explorerTxLink": "https://explorer.bitcoinsilver.top/tx/{0}",
+        "explorerAccountLink": "https://explorer.bitcoinsilver.top/address/{0}"
+    },
     "bitcoin-ii": {
         "name": "BitcoinII",
         "canonicalName": "Bitcoin-II",
