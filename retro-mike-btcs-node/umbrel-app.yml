@@ -1,0 +1,29 @@
+manifestVersion: 1
+id: retro-mike-btcs-node
+name: Bitcoin Silver (BTCS) Node
+tagline: Bitcoin Silver Node. This is a general node app for Bitcoin Silver and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Bitcoin network.
+icon: https://avatars.githubusercontent.com/u/185931597?s=200&v=4
+category: Mining Nodes
+version: "1.0.0"
+port: 5017
+description: |
+  Bitcoin Node. This is a general node app for Bitcoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Bitcoin network.
+
+  If you find this app useful, please consider donating
+
+  BTC - 31q6x9Vp9J2BJ8rTnW4F8aP744CEAScFN5
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://github.com/TheRetroMike/bitcoinsilver
+repo: https://github.com/TheRetroMike/bitcoinsilver
+support: https://github.com/TheRetroMike/bitcoinsilver
+gallery:
+  - https://avatars.githubusercontent.com/u/185931597?s=200&v=4
+releaseNotes: >-
+  2026.02.28 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
