@@ -378,6 +378,34 @@
         "explorerTxLink": "https://explorer.bitcoinsilver.top/tx/{0}",
         "explorerAccountLink": "https://explorer.bitcoinsilver.top/address/{0}"
     },
+    "wojakcoin": {
+        "name": "Wojakcoin",
+        "canonicalName": "Wojakcoin",
+        "symbol": "WJK",
+        "family": "bitcoin",
+        "website": "https://wojakcoin.cash/",
+        "market": "https://miningpoolstats.stream/wojakcoin",
+        "twitter": "https://x.com/wojakcoin2017",
+        "telegram": "",
+        "discord": "",
+        "coinbaseHasher": {
+            "hash": "sha256d"
+        },
+        "headerHasher": {
+            "hash": "sha256d"
+        },
+        "blockHasher": {
+            "hash": "reverse",
+            "args": [
+                {
+                    "hash": "sha256d"
+                }
+            ]
+        },
+        "explorerBlockLink": "https://explorer.wojakcoin.cash/block/$hash$",
+        "explorerTxLink": "https://explorer.wojakcoin.cash/tx/{0}",
+        "explorerAccountLink": "https://explorer.wojakcoin.cash/address/{0}"
+    },	
     "bitcoin-ii": {
         "name": "BitcoinII",
         "canonicalName": "Bitcoin-II",
