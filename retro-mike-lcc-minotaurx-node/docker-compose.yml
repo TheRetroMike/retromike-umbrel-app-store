@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      APP_HOST: retro-mike-lcc-minotaurx-node_web_1
+      APP_PORT: 8080
+  web:
+    image: amir20/dozzle:v8.12.8@sha256:8ff3115c9c9dd7576839df6f2575de345ca7cafa398cf2496f1f19c31d862ac1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: on-failure
+    depends_on:
+      - node
+  node:
+    image: theretromike/nodes:litecoincash
+    restart: on-failure
+    stop_grace_period: 1m
+    volumes:
+      - ${APP_DATA_DIR}/.litecoincash:/root/.litecoincash
+    ports:
+      - 9019:9019    # RPC
+      - 7019:7019    # ZMQ
+    entrypoint: "/usr/bin/litecoincashd -printtoconsole -server -prune=550 -wallet=default -zmqpubhashblock=tcp://127.0.0.1:7019 -rpcbind=0.0.0.0 -rpcport=9019 -rpcallowip=0.0.0.0/0 -rpcuser=pooluser -rpcpassword=poolpassword -powalgo=minotaurx -addnode=108.239.16.64 -addnode=108.249.26.52 -addnode=108.91.11.33 -addnode=109.58.29.116 -addnode=136.243.145.143 -addnode=137.101.181.79 -addnode=139.162.153.168 -addnode=151.46.23.73 -addnode=164.68.108.60 -addnode=173.72.23.158 -addnode=176.150.209.154 -addnode=185.54.177.114 -addnode=185.54.177.84"

@@ -1,0 +1,29 @@
+manifestVersion: 1
+id: retro-mike-lcc-sha256-node
+name: Litecoin Cash (LCC) SHA256 Node
+tagline: Litecoin Cash Node. This is a general node app for Litecoin Cash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Litecoin Cash network.
+icon: https://miningpoolstats.stream/ico/litecoincash.webp
+category: Mining Nodes
+version: "1.0.0"
+port: 5017
+description: |
+  Litecoin Cash Node. This is a general node app for Litecoin Cash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Litecoin Cash network.
+
+  If you find this app useful, please consider donating
+
+  BTC - 31q6x9Vp9J2BJ8rTnW4F8aP744CEAScFN5
+
+developer: Retro Mike
+website: http://retromiketech.com
+submitter: Retro Mike
+submission: https://github.com/TheRetroMike/wojakcore
+repo: https://github.com/TheRetroMike/litecoincash
+support: https://github.com/TheRetroMike/litecoincash
+gallery:
+  - https://miningpoolstats.stream/ico/litecoincash.webp
+releaseNotes: >-
+  2026.03.14 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
