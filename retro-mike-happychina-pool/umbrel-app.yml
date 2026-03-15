@@ -1,9 +1,9 @@
 manifestVersion: 1
 id: retro-mike-happychina-pool
-name: HappyChina Mining Pool
-tagline: Multi-coin Scrypt mining pool with merge mining - mine 9 coins at once
-icon: https://raw.githubusercontent.com/bobparkerbob888-tech/happychina-pool-umbrel/main/happychina-pool/icon.png
-category: bitcoin
+name: HappyChina Scrypt Merged Mining Pool
+tagline: Multi-coin Scrypt mining pool with merge mining - mine 8 coins at once
+icon: https://pbs.twimg.com/media/GgyDcOVXAAEN06Z.jpg
+category: Merged Mining
 version: "2.2.0"
 port: 8080
 description: >-
@@ -48,7 +48,7 @@ submission: https://github.com/bobparkerbob888-tech/happychina-pool-umbrel
 repo: https://github.com/bobparkerbob888-tech/happychina-pool-umbrel
 support: https://github.com/bobparkerbob888-tech/happychina-pool-umbrel/issues
 gallery:
-  - https://raw.githubusercontent.com/bobparkerbob888-tech/happychina-pool-umbrel/main/happychina-pool/icon.png
+  - https://pbs.twimg.com/media/GgyDcOVXAAEN06Z.jpg
 releaseNotes: >-
   v2.2.0 - Coins disabled by default, enable from admin panel.
   Daemons start/stop automatically when you enable/disable coins.
