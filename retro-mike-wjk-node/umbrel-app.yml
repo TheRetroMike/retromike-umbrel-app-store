@@ -4,8 +4,8 @@ name: Wojakcoin (WJK) Node
 tagline: Wojakcoin Node. This is a general node app for Wojakcoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Wojakcoin network.
 icon: https://wojakcoin.cash/wojak-logo.png
 category: Mining Nodes
-version: "1.0.0"
-port: 5017
+version: "1.1.0"
+port: 5018
 description: |
   Wojakcoin Node. This is a general node app for Wojakcoin and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Wojakcoin network.
 

@@ -4,8 +4,8 @@ name: Litecoin Cash (LCC) SHA256 Node
 tagline: Litecoin Cash Node. This is a general node app for Litecoin Cash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Litecoin Cash network.
 icon: https://miningpoolstats.stream/ico/litecoincash.webp
 category: Mining Nodes
-version: "1.0.0"
-port: 5017
+version: "1.1.0"
+port: 5019
 description: |
   Litecoin Cash Node. This is a general node app for Litecoin Cash and can be used to in conjunction with mining pool software to solo mine, or just be ran standalone to help contribute to the Litecoin Cash network.
 
