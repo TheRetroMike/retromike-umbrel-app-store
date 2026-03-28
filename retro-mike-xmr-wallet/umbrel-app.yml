@@ -3,7 +3,7 @@ id: retro-mike-xmr-wallet
 name: Monero (XMR) Wallet
 tagline: Monero Node Wallet. This is needed in conjuction with the XMR node for facilitating wallet functions with Miningcore when setting up a solo mining pool.
 icon: https://cryptologos.cc/logos/monero-xmr-logo.png
-category: Untested Mining Nodes
+category: Mining Nodes
 version: "1.0.0"
 port: 5015
 description: |
